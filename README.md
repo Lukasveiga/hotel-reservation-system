@@ -10,6 +10,12 @@ This project entails the development of a robust hotel reservation system REST A
 <img src="./assets/system-desing-bduf.png">
 </div>
 
+## Hotels - Rooms UML Diagram Relationship (Initial Modeling)
+
+<div align="center">
+<img src="./assets/hotel-room-uml-diagram.png">
+</div>
+
 ## Use Cases:
 
 ### Users:
