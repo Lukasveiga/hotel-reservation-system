@@ -1,7 +1,9 @@
 package com.devlukas.hotelreservationsystem.entities.hotel;
 
+import com.devlukas.hotelreservationsystem.entities.room.Room;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,7 +30,7 @@ public class Hotel {
     private HotelAddress address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hotel")
-    private Set<Assessments> assessments;
+    private final Set<Assessments> assessments = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -36,5 +38,64 @@ public class Hotel {
             joinColumns = @JoinColumn(name = "hotel_id"),
             inverseJoinColumns = @JoinColumn(name = "convenience_id")
     )
-    private Set<Conveniences> conveniences;
+    private final Set<Conveniences> conveniences = new HashSet<>();
+
+    @OneToMany(mappedBy = "hotel")
+    private final Set<Room> rooms = new HashSet<>();
+
+    public Hotel() {
+    }
+
+    public Hotel(String name, String CNPJ, String phone, String email, String description, HotelAddress address) {
+        this.name = name;
+        this.CNPJ = CNPJ;
+        this.phone = phone;
+        this.email = email;
+        this.description = description;
+        this.address = address;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public HotelAddress getAddress() {
+        return address;
+    }
+
+    public void setAddress(HotelAddress address) {
+        this.address = address;
+    }
+
+    public String getCNPJ() {
+        return CNPJ;
+    }
 }
