@@ -3,8 +3,10 @@ package com.devlukas.hotelreservationsystem.services.hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.repositories.HotelRepository;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
-import com.devlukas.hotelreservationsystem.services.hotel.exceptions.UniqueIdentifierAlreadyExistsException;
+import com.devlukas.hotelreservationsystem.services.exceptions.UniqueIdentifierAlreadyExistsException;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,9 +19,10 @@ public class HotelService {
         this.repository = repository;
     }
 
+    @Transactional
     public Hotel save(Hotel newHotel) {
         this.repository.findByCNPJ(newHotel.getCNPJ())
-                .ifPresent(e -> {throw new UniqueIdentifierAlreadyExistsException();});
+                .ifPresent(e -> {throw new UniqueIdentifierAlreadyExistsException("CNPJ");});
         return this.repository.save(newHotel);
     }
 
@@ -32,6 +35,7 @@ public class HotelService {
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel", hotelId));
     }
 
+    @Transactional
     public Hotel update(long hotelId, Hotel updateHotel) {
         var oldHotel = this.findById(hotelId);
         oldHotel.setName(updateHotel.getName());
@@ -42,6 +46,7 @@ public class HotelService {
         return this.repository.save(oldHotel);
     }
 
+    @Transactional
     public void delete(long hotelId) {
         this.findById(hotelId);
         this.repository.deleteById(hotelId);
