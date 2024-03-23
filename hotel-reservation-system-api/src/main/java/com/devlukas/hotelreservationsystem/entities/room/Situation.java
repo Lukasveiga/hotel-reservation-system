@@ -2,9 +2,9 @@ package com.devlukas.hotelreservationsystem.entities.room;
 
 public enum Situation {
 
-    AVAILABLE("Available"), UNAVAILABLE("Unavailable"), PENDING("Pending");
+    AVAILABLE("Available"), UNAVAILABLE("Unavailable");
 
-    private final String situation;
+    private String situation;
 
     Situation(String situation) {
         this.situation = situation;
@@ -12,5 +12,9 @@ public enum Situation {
 
     public String getSituation() {
         return situation;
+    }
+
+    public void setSituation(String situation) {
+        this.situation = situation;
     }
 }

@@ -3,7 +3,9 @@ package com.devlukas.hotelreservationsystem.entities.hotel;
 import com.devlukas.hotelreservationsystem.entities.room.Room;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -41,7 +43,7 @@ public class Hotel {
     private final Set<Conveniences> conveniences = new HashSet<>();
 
     @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY)
-    private final Set<Room> rooms = new HashSet<>();
+    private final List<Room> rooms = new ArrayList<>();
 
     @Version
     private Long version;
@@ -108,5 +110,13 @@ public class Hotel {
 
     public String getCNPJ() {
         return CNPJ;
+    }
+
+    public void addRoom(Room room) {
+        this.rooms.add(room);
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
     }
 }
