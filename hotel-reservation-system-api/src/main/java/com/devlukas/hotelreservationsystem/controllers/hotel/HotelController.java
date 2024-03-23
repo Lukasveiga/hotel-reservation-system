@@ -3,15 +3,12 @@ package com.devlukas.hotelreservationsystem.controllers.hotel;
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.HotelToResponse;
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.RequestToHotel;
 import com.devlukas.hotelreservationsystem.controllers.hotel.dto.HotelRequestBody;
-import com.devlukas.hotelreservationsystem.controllers.system.Result;
+import com.devlukas.hotelreservationsystem.system.Result;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -45,5 +42,68 @@ public class HotelController {
                         .message("Add success")
                         .localDateTime(LocalDateTime.now())
                         .data(response).build());
+    }
+
+    @GetMapping("/{hotelId}")
+    public ResponseEntity<Result> findHotelById(@PathVariable Long hotelId, HttpServletRequest request) {
+        var hotel = this.hotelService.findById(hotelId);
+        var response = this.hotelToResponse.convert(hotel);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Find success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(response)
+                        .build()
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<Result> findAllHotels(HttpServletRequest request) {
+        var hotels = this.hotelService.findAll();
+        var response = hotels.stream().map(this.hotelToResponse::convert).toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Find all success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(response)
+                        .build()
+        );
+    }
+
+    @PutMapping("/{hotelId}")
+    public ResponseEntity<Result> updateHotel( @PathVariable Long hotelId, @RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
+        var updatedHotel = this.hotelService.update(hotelId, Objects.requireNonNull(this.requestToHotel.convert(requestBody)));
+        var response = this.hotelToResponse.convert(updatedHotel);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Update success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(response)
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/{hotelId}")
+    public ResponseEntity<Result> deleteHotel(@PathVariable Long hotelId, HttpServletRequest request) {
+        this.hotelService.delete(hotelId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Delete success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(null)
+                        .build()
+        );
     }
 }

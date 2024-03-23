@@ -1,4 +1,4 @@
-package com.devlukas.hotelreservationsystem.controllers.system;
+package com.devlukas.hotelreservationsystem.system;
 
 import lombok.Builder;
 
