@@ -25,14 +25,14 @@ public class Hotel {
     private String description;
 
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private HotelAddress address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hotel")
     private final Set<Assessments> assessments = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "hotel_conveniences",
             joinColumns = @JoinColumn(name = "hotel_id"),
@@ -40,8 +40,11 @@ public class Hotel {
     )
     private final Set<Conveniences> conveniences = new HashSet<>();
 
-    @OneToMany(mappedBy = "hotel")
+    @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY)
     private final Set<Room> rooms = new HashSet<>();
+
+    @Version
+    private Long version;
 
     public Hotel() {
     }
@@ -53,6 +56,14 @@ public class Hotel {
         this.email = email;
         this.description = description;
         this.address = address;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

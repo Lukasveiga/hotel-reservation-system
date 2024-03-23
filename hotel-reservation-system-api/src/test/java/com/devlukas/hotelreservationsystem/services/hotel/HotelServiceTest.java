@@ -3,9 +3,10 @@ package com.devlukas.hotelreservationsystem.services.hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.repositories.HotelRepository;
-import com.devlukas.hotelreservationsystem.services.ServiceTestConfig;
+import com.devlukas.hotelreservationsystem.ServiceTestConfig;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
-import com.devlukas.hotelreservationsystem.services.hotel.exceptions.UniqueIdentifierAlreadyExistsException;
+import com.devlukas.hotelreservationsystem.services.exceptions.UniqueIdentifierAlreadyExistsException;
+import com.devlukas.hotelreservationsystem.utils.HotelUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,11 +33,8 @@ class HotelServiceTest implements ServiceTestConfig {
 
     @BeforeEach
     void setUp() {
-        address = new HotelAddress("Brazil", "Parahyba", "Cuité", "Bairro do Ró", "Rua da Já", "12", "520425-70");
-        hotel = new Hotel("Test Hotel", "80.826.515/0001-84",
-                "(11)2233-5599",
-                "hotel_test@email.com",
-                "Test Hotel with great accommodations to run junit tests", address);
+        address = HotelUtils.generateHotelAddress();
+        hotel = HotelUtils.generateHotelEntity(address);
     }
 
     @Test
@@ -108,10 +106,7 @@ class HotelServiceTest implements ServiceTestConfig {
     @Test
     void testUpdateHotelSuccess() {
         // Given
-        var updateHotel = new Hotel("Test Hotel", "12.249.515/0001-09",
-                "(11)2233-5599",
-                "hotel_test@email.com",
-                "Test Hotel with great accommodations to run junit tests", address);
+        var updateHotel = HotelUtils.generateHotelEntity(address);
 
         when(this.hotelRepository.findById(anyLong()))
                 .thenReturn(Optional.of(hotel));
@@ -129,10 +124,7 @@ class HotelServiceTest implements ServiceTestConfig {
     @Test
     void testUpdateHotelErrorHotelNotFound() {
         // Given
-        var updateHotel = new Hotel("Test Hotel", "12.249.515/0001-09",
-                "(11)2233-5599",
-                "hotel_test@email.com",
-                "Test Hotel with great accommodations to run junit tests", address);
+        var updateHotel = HotelUtils.generateHotelEntity(address);
 
         when(this.hotelRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());

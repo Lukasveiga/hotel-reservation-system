@@ -1,4 +1,4 @@
-package com.devlukas.hotelreservationsystem.services;
+package com.devlukas.hotelreservationsystem;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
