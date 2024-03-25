@@ -16,6 +16,12 @@ This project entails the development of a robust hotel reservation system REST A
 <img src="./assets/hotel-room-uml-diagram.png">
 </div>
 
+## AWS CLOUD System
+
+<div align="center">
+<img src="./assets/aws.png">
+</div>
+
 ## Use Cases:
 
 ### Users:
