@@ -8,5 +8,5 @@ import org.springframework.test.context.ActiveProfiles;
 @Tag("Controller")
 @ActiveProfiles("test")
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class ControllerTestConfig {}
