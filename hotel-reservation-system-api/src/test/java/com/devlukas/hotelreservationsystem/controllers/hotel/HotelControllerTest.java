@@ -1,11 +1,11 @@
 package com.devlukas.hotelreservationsystem.controllers.hotel;
 
+import com.c4_soft.springaddons.security.oauth2.test.annotations.WithJwt;
 import com.devlukas.hotelreservationsystem.controllers.hotel.dto.HotelRequestBody;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.ControllerTestConfig;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
-import com.devlukas.hotelreservationsystem.services.exceptions.UniqueIdentifierAlreadyExistsException;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import com.devlukas.hotelreservationsystem.utils.HotelUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithJwt("hotel-admin.json")
 class HotelControllerTest extends ControllerTestConfig {
 
     @Autowired
@@ -58,7 +60,6 @@ class HotelControllerTest extends ControllerTestConfig {
         // Given
         var requestBody = new HotelRequestBody(
                 hotel.getName(),
-                hotel.getCNPJ(),
                 hotel.getPhone(),
                 hotel.getEmail(),
                 hotel.getDescription(),
@@ -67,11 +68,12 @@ class HotelControllerTest extends ControllerTestConfig {
 
         var request = objectMapper.writeValueAsString(requestBody);
 
-        when(this.hotelService.save(any(Hotel.class)))
+        when(this.hotelService.save(any(Hotel.class), anyString()))
                 .thenReturn(hotel);
 
         // When - Then
         this.mockMvc.perform(post(BASE_URL)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(request)
                 .accept(MediaType.APPLICATION_JSON))
@@ -82,42 +84,11 @@ class HotelControllerTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.name").value(requestBody.name()))
-                .andExpect(jsonPath("$.data.CNPJ").value(requestBody.CNPJ()))
+                .andExpect(jsonPath("$.data.CNPJ").value(hotel.getCNPJ()))
                 .andExpect(jsonPath("$.data.phone").value(requestBody.phone()))
                 .andExpect(jsonPath("$.data.email").value(requestBody.email()))
                 .andExpect(jsonPath("$.data.description").value(requestBody.description()))
                 .andExpect(jsonPath("$.data.address").isNotEmpty())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
-    void testSaveHotelErrorUniqueIdentifierAlreadyExists() throws Exception {
-        // Given
-        var requestBody = new HotelRequestBody(
-                hotel.getName(),
-                hotel.getCNPJ(),
-                hotel.getPhone(),
-                hotel.getEmail(),
-                hotel.getDescription(),
-                hotel.getAddress()
-        );
-
-        var request = objectMapper.writeValueAsString(requestBody);
-
-        when(this.hotelService.save(any(Hotel.class)))
-                .thenThrow(new UniqueIdentifierAlreadyExistsException("CNPJ"));
-
-        // When - Then
-        this.mockMvc.perform(post(BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel"))
-                .andExpect(jsonPath("$.flag").value(false))
-                .andExpect(jsonPath("$.message").value("The CNPJ provided has already been registered in the database"))
-                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
-                .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -196,7 +167,6 @@ class HotelControllerTest extends ControllerTestConfig {
 
         var requestBody = new HotelRequestBody(
                 hotel.getName(),
-                hotel.getCNPJ(),
                 hotel.getPhone(),
                 hotel.getEmail(),
                 hotel.getDescription(),
@@ -220,7 +190,7 @@ class HotelControllerTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.name").value(requestBody.name()))
-                .andExpect(jsonPath("$.data.CNPJ").value(requestBody.CNPJ()))
+                .andExpect(jsonPath("$.data.CNPJ").value(hotel.getCNPJ()))
                 .andExpect(jsonPath("$.data.phone").value(requestBody.phone()))
                 .andExpect(jsonPath("$.data.email").value(requestBody.email()))
                 .andExpect(jsonPath("$.data.description").value(requestBody.description()))
@@ -235,7 +205,6 @@ class HotelControllerTest extends ControllerTestConfig {
 
         var requestBody = new HotelRequestBody(
                 hotel.getName(),
-                hotel.getCNPJ(),
                 hotel.getPhone(),
                 hotel.getEmail(),
                 hotel.getDescription(),

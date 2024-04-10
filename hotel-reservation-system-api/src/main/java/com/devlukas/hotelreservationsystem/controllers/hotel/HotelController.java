@@ -8,6 +8,8 @@ import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -31,8 +33,10 @@ public class HotelController {
 
     @PostMapping
     public ResponseEntity<Result> saveHotel(@RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+
         var newHotel = this.requestToHotel.convert(requestBody);
-        var savedHotel = this.hotelService.save(Objects.requireNonNull(newHotel));
+        var savedHotel = this.hotelService.save(Objects.requireNonNull(newHotel), hotelAdminCNPJ);
         var response = this.hotelToResponse.convert(savedHotel);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -105,5 +109,10 @@ public class HotelController {
                         .data(null)
                         .build()
         );
+    }
+
+    private String getTokenAttribute(String attributeKey) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ((JwtAuthenticationToken) authentication).getTokenAttributes().get(attributeKey).toString();
     }
 }

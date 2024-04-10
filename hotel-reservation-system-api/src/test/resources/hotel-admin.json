@@ -1,0 +1,5 @@
+{
+  "iss": "hotel-reservation-system",
+  "sub": "06.596.172/0001-566",
+  "authorities": "ROLE_hotelAdmin"
+}

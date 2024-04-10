@@ -1,7 +1,11 @@
 package com.devlukas.hotelreservationsystem.entities.hotelAdmin;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 public class HotelAdmin {
     @Id
@@ -18,35 +22,4 @@ public class HotelAdmin {
     public HotelAdmin() {
     }
 
-    public String getCNPJ() {
-        return CNPJ;
-    }
-
-    public void setCNPJ(String CNPJ) {
-        this.CNPJ = CNPJ;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRoles() {
-        return roles;
-    }
-
-    public void setRoles(String roles) {
-        this.roles = roles;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

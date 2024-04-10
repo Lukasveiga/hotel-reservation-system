@@ -44,24 +44,10 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(hotel);
 
         // When
-        var savedHotel = this.hotelService.save(hotel);
+        var savedHotel = this.hotelService.save(hotel, "");
 
         // Then
         assertThat(savedHotel).usingRecursiveAssertion().isEqualTo(hotel);
-    }
-
-    @Test
-    void testSaveNewHotelErrorUniqueIdentifierAlreadyExists() {
-        // Given
-        when(this.hotelRepository.findByCNPJ("80.826.515/0001-84"))
-                .thenReturn(Optional.of(hotel));
-
-        // When - Then
-        assertThatThrownBy(() -> this.hotelService.save(hotel))
-                .isInstanceOf(UniqueIdentifierAlreadyExistsException.class)
-                .hasMessage("The CNPJ provided has already been registered in the database");
-        verify(hotelRepository, times(1)).findByCNPJ(anyString());
-        verify(hotelRepository, times(0)).save(any(Hotel.class));
     }
 
     @Test

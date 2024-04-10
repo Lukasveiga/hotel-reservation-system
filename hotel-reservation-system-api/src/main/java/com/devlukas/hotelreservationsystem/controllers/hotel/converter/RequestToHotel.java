@@ -10,7 +10,7 @@ public class RequestToHotel implements Converter<HotelRequestBody, Hotel> {
     @Override
     public Hotel convert(HotelRequestBody source) {
         return new Hotel(source.name(),
-                source.CNPJ(),
+                null,
                 source.phone(),
                 source.email(),
                 source.description(),
