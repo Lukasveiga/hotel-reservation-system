@@ -2,6 +2,9 @@ package com.devlukas.hotelreservationsystem.entities.hotel;
 
 import com.devlukas.hotelreservationsystem.entities.room.Room;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
 public class Hotel {
 
     @Id
@@ -46,7 +51,7 @@ public class Hotel {
     private final List<Room> rooms = new ArrayList<>();
 
     @Version
-    private Long version;
+    protected long version;
 
     public Hotel() {
     }
@@ -60,63 +65,7 @@ public class Hotel {
         this.address = address;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public HotelAddress getAddress() {
-        return address;
-    }
-
-    public void setAddress(HotelAddress address) {
-        this.address = address;
-    }
-
-    public String getCNPJ() {
-        return CNPJ;
-    }
-
     public void addRoom(Room room) {
         this.rooms.add(room);
-    }
-
-    public List<Room> getRooms() {
-        return rooms;
     }
 }

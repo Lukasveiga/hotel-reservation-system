@@ -2,12 +2,17 @@ package com.devlukas.hotelreservationsystem.entities.room;
 
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 
 @Entity
+@Getter
+@Setter
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +37,9 @@ public class Room {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Hotel hotel;
 
+    @Version
+    protected long version;
+
     public Room() {
     }
 
@@ -45,69 +53,5 @@ public class Room {
         this.price = price;
         this.maxGuestsNumber = maxGuestsNumber;
         this.situation = situation;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getSize() {
-        return size;
-    }
-
-    public void setSize(Double size) {
-        this.size = size;
-    }
-
-    public Integer getBedsNumber() {
-        return bedsNumber;
-    }
-
-    public void setBedsNumber(Integer bedsNumber) {
-        this.bedsNumber = bedsNumber;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Integer getMaxGuestsNumber() {
-        return maxGuestsNumber;
-    }
-
-    public void setMaxGuestsNumber(Integer maxGuestsNumber) {
-        this.maxGuestsNumber = maxGuestsNumber;
-    }
-
-    public Situation getSituation() {
-        return situation;
-    }
-
-    public void setSituation(Situation situation) {
-        this.situation = situation;
-    }
-
-    public Hotel getHotel() {
-        return hotel;
-    }
-
-    public void setHotel(Hotel hotel) {
-        this.hotel = hotel;
     }
 }

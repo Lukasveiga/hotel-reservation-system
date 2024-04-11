@@ -20,9 +20,8 @@ public class HotelService {
     }
 
     @Transactional
-    public Hotel save(Hotel newHotel) {
-        this.repository.findByCNPJ(newHotel.getCNPJ())
-                .ifPresent(e -> {throw new UniqueIdentifierAlreadyExistsException("CNPJ");});
+    public Hotel save(Hotel newHotel, String hotelAdminCNPJ) {
+        newHotel.setCNPJ(hotelAdminCNPJ);
         return this.repository.save(newHotel);
     }
 
