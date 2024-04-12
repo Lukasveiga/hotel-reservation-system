@@ -106,6 +106,34 @@ class HotelServiceTest implements ServiceTestConfig {
     }
 
     @Test
+    void testFindByHotelByState() {
+        // Given
+        when(this.hotelRepository.findByState(anyString()))
+                .thenReturn(List.of(hotel));
+
+        // When
+        var result = this.hotelService.findByState(hotel.getAddress().getState());
+
+        // Then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).usingRecursiveAssertion().isEqualTo(hotel);
+    }
+
+    @Test
+    void testFindHotelByCity() {
+        // Given
+        when(this.hotelRepository.findByCity(anyString()))
+                .thenReturn(List.of(hotel));
+
+        // When
+        var result = this.hotelService.findByCity(hotel.getAddress().getCity());
+
+        // Then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).usingRecursiveAssertion().isEqualTo(hotel);
+    }
+
+    @Test
     void testUpdateHotelSuccess() {
         // Given
         var updateHotel = HotelUtils.generateHotelEntity(address);

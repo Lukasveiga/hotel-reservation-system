@@ -36,6 +36,14 @@ public class HotelService {
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel", hotelId));
     }
 
+    public List<Hotel> findByState(String state) {
+        return this.repository.findByState(state);
+    }
+
+    public List<Hotel> findByCity(String city) {
+        return this.repository.findByCity(city);
+    }
+
     @Transactional
     public Hotel update(long hotelId, String CNPJ, Hotel updateHotel) {
         var oldHotel = this.findByIdAndCNPJ(hotelId, CNPJ);
