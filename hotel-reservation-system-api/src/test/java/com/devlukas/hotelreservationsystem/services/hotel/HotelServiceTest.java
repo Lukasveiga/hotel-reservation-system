@@ -5,7 +5,6 @@ import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.repositories.HotelRepository;
 import com.devlukas.hotelreservationsystem.ServiceTestConfig;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
-import com.devlukas.hotelreservationsystem.services.exceptions.UniqueIdentifierAlreadyExistsException;
 import com.devlukas.hotelreservationsystem.utils.HotelUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +30,8 @@ class HotelServiceTest implements ServiceTestConfig {
 
     HotelAddress address;
 
+    String hotelAdminCNPJ = "87.933.894/0001-50";
+
     @BeforeEach
     void setUp() {
         address = HotelUtils.generateHotelAddress();
@@ -44,10 +45,11 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(hotel);
 
         // When
-        var savedHotel = this.hotelService.save(hotel, "");
+        var savedHotel = this.hotelService.save(hotel, hotelAdminCNPJ);
 
         // Then
         assertThat(savedHotel).usingRecursiveAssertion().isEqualTo(hotel);
+        assertThat(savedHotel.getCNPJ()).isEqualTo(hotelAdminCNPJ);
     }
 
     @Test
@@ -65,26 +67,40 @@ class HotelServiceTest implements ServiceTestConfig {
     }
 
     @Test
-    void testFindByIdSuccess() {
+    void testFindAllHotelsByCNPJSuccess() {
         // Given
-        when(this.hotelRepository.findById(anyLong()))
+        when(this.hotelRepository.findByCNPJ(anyString()))
+                .thenReturn(List.of(hotel));
+
+        // When
+        var hotels = this.hotelService.findAllByCNPJ(hotelAdminCNPJ);
+
+        // Then
+        assertThat(hotels.size()).isEqualTo(1);
+        assertThat(hotels.get(0)).usingRecursiveAssertion().isEqualTo(hotel);
+    }
+
+    @Test
+    void testFindByIdAndCNPJSuccess() {
+        // Given
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.of(hotel));
 
         // When
-        var foundHotel = this.hotelService.findById(1L);
+        var foundHotel = this.hotelService.findByIdAndCNPJ(1L, hotelAdminCNPJ);
 
         // Then
         assertThat(foundHotel).usingRecursiveAssertion().isEqualTo(hotel);
     }
 
     @Test
-    void testFindByIdErrorHotelNotFound() {
+    void testFindByIdAndCNPJErrorHotelNotFound() {
         // Given
-        when(this.hotelRepository.findById(anyLong()))
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.findById(1L))
+        assertThatThrownBy(() -> this.hotelService.findByIdAndCNPJ(1L, hotelAdminCNPJ))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessage("Could not found Hotel with id 1");
     }
@@ -94,14 +110,14 @@ class HotelServiceTest implements ServiceTestConfig {
         // Given
         var updateHotel = HotelUtils.generateHotelEntity(address);
 
-        when(this.hotelRepository.findById(anyLong()))
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.of(hotel));
 
         when(this.hotelRepository.save(hotel))
                 .thenReturn(hotel);
 
         // When
-        var updatedHotel = this.hotelService.update(1L, updateHotel);
+        var updatedHotel = this.hotelService.update(1L, hotelAdminCNPJ, updateHotel);
 
         // Then
         assertThat(updatedHotel).usingRecursiveAssertion().isEqualTo(hotel);
@@ -112,46 +128,46 @@ class HotelServiceTest implements ServiceTestConfig {
         // Given
         var updateHotel = HotelUtils.generateHotelEntity(address);
 
-        when(this.hotelRepository.findById(anyLong()))
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.update(1L, updateHotel))
+        assertThatThrownBy(() -> this.hotelService.update(1L, hotelAdminCNPJ, updateHotel))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessage("Could not found Hotel with id 1");
-        verify(hotelRepository, times(1)).findById(anyLong());
+        verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
         verify(hotelRepository, times(0)).save(any(Hotel.class));
     }
 
     @Test
     void testDeleteHotelSuccess() {
         // Given
-        when(this.hotelRepository.findById(anyLong()))
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.of(hotel));
 
         doNothing().when(this.hotelRepository).deleteById(anyLong());
 
         // When
-        this.hotelService.delete(1L);
+        this.hotelService.delete(1L,hotelAdminCNPJ);
 
         // Then
-        verify(this.hotelRepository, times(1)).findById(anyLong());
+        verify(this.hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
         verify(this.hotelRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
     void testDeleteHotelErrorHotelNotFound() {
         // Given
-        when(this.hotelRepository.findById(anyLong()))
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.empty());
 
         // When - Then
 
 
-        assertThatThrownBy(() -> this.hotelService.delete(1L))
+        assertThatThrownBy(() -> this.hotelService.delete(1L, hotelAdminCNPJ))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessage("Could not found Hotel with id 1");
-        verify(hotelRepository, times(1)).findById(anyLong());
+        verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
         verify(this.hotelRepository, times(0)).deleteById(anyLong());
     }
 }

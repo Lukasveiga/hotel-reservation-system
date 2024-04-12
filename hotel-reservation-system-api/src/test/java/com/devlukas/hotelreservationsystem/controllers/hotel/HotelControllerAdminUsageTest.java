@@ -1,10 +1,10 @@
 package com.devlukas.hotelreservationsystem.controllers.hotel;
 
 import com.c4_soft.springaddons.security.oauth2.test.annotations.WithJwt;
+import com.devlukas.hotelreservationsystem.ControllerTestConfig;
 import com.devlukas.hotelreservationsystem.controllers.hotel.dto.HotelRequestBody;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
-import com.devlukas.hotelreservationsystem.ControllerTestConfig;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import com.devlukas.hotelreservationsystem.utils.HotelUtils;
@@ -21,15 +21,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithJwt("hotel-admin.json")
-class HotelControllerTest extends ControllerTestConfig {
+class HotelControllerAdminUsageTest extends ControllerTestConfig {
 
     @Autowired
     MockMvc mockMvc;
@@ -40,7 +40,7 @@ class HotelControllerTest extends ControllerTestConfig {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Value("${api.endpoint.base-url}/hotel")
+    @Value("${api.endpoint.base-url}/hotel/admin")
     String BASE_URL;
 
     Hotel hotel;
@@ -74,11 +74,11 @@ class HotelControllerTest extends ControllerTestConfig {
         // When - Then
         this.mockMvc.perform(post(BASE_URL)
                         .with(SecurityMockMvcRequestPostProcessors.jwt())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(request)
-                .accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Add success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -97,13 +97,13 @@ class HotelControllerTest extends ControllerTestConfig {
         // Given
         var id = 1L;
 
-        when(this.hotelService.findById(id))
+        when(this.hotelService.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(hotel);
 
         // When - Then
         this.mockMvc.perform(get(BASE_URL + "/" + id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Find success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -122,14 +122,14 @@ class HotelControllerTest extends ControllerTestConfig {
         // Given
         var id = 1L;
 
-        when(this.hotelService.findById(id))
+        when(this.hotelService.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenThrow(new ObjectNotFoundException("Hotel", id));
 
         // When - Then
         this.mockMvc.perform(get(BASE_URL + "/" + id)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -138,15 +138,15 @@ class HotelControllerTest extends ControllerTestConfig {
     }
 
     @Test
-    void testFindAllHotelsSuccess() throws Exception {
+    void findAllHotelsSuccess() throws Exception {
         // Given
-        when(this.hotelService.findAll())
+        when(this.hotelService.findAllByCNPJ(anyString()))
                 .thenReturn(List.of(hotel));
 
         // When - Then
         this.mockMvc.perform(get(BASE_URL).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Find all success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -175,8 +175,8 @@ class HotelControllerTest extends ControllerTestConfig {
 
         var request = objectMapper.writeValueAsString(requestBody);
 
-        when(this.hotelService.update(anyLong(),any(Hotel.class)))
-               .thenReturn(hotel);
+        when(this.hotelService.update(anyLong(),anyString(),any(Hotel.class)))
+                .thenReturn(hotel);
 
         // When - Then
         this.mockMvc.perform(put(BASE_URL + "/" + id)
@@ -184,7 +184,7 @@ class HotelControllerTest extends ControllerTestConfig {
                         .content(request)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Update success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -213,7 +213,7 @@ class HotelControllerTest extends ControllerTestConfig {
 
         var request = objectMapper.writeValueAsString(requestBody);
 
-        when(this.hotelService.update(anyLong(),any(Hotel.class)))
+        when(this.hotelService.update(anyLong(),anyString(),any(Hotel.class)))
                 .thenThrow(new ObjectNotFoundException("Hotel", id));
 
         // When - Then
@@ -222,7 +222,7 @@ class HotelControllerTest extends ControllerTestConfig {
                         .content(request)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -236,12 +236,12 @@ class HotelControllerTest extends ControllerTestConfig {
         var id = 1L;
 
         doNothing().when(this.hotelService)
-                .delete(id);
+                .delete(anyLong(), anyString());
 
         // When - Then
         this.mockMvc.perform(delete(BASE_URL + "/" + id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Delete success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -255,12 +255,12 @@ class HotelControllerTest extends ControllerTestConfig {
         var id = 1L;
 
         doThrow(new ObjectNotFoundException("Hotel", id))
-                .when(this.hotelService).delete(anyLong());
+                .when(this.hotelService).delete(anyLong(), anyString());
 
         // When - Then
         this.mockMvc.perform(delete(BASE_URL + "/" + id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())

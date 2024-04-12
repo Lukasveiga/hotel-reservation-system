@@ -3,8 +3,6 @@ package com.devlukas.hotelreservationsystem.services.hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.repositories.HotelRepository;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
-import com.devlukas.hotelreservationsystem.services.exceptions.UniqueIdentifierAlreadyExistsException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +27,18 @@ public class HotelService {
         return this.repository.findAll();
     }
 
-    public Hotel findById(Long hotelId) {
-        return this.repository.findById(hotelId)
+    public List<Hotel> findAllByCNPJ(String CNPJ) {
+        return this.repository.findByCNPJ(CNPJ);
+    }
+
+    public Hotel findByIdAndCNPJ(Long hotelId, String CNPJ) {
+        return this.repository.findByIdAndCNPJ(hotelId, CNPJ)
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel", hotelId));
     }
 
     @Transactional
-    public Hotel update(long hotelId, Hotel updateHotel) {
-        var oldHotel = this.findById(hotelId);
+    public Hotel update(long hotelId, String CNPJ, Hotel updateHotel) {
+        var oldHotel = this.findByIdAndCNPJ(hotelId, CNPJ);
         oldHotel.setName(updateHotel.getName());
         oldHotel.setEmail(updateHotel.getEmail());
         oldHotel.setPhone(updateHotel.getPhone());
@@ -46,8 +48,8 @@ public class HotelService {
     }
 
     @Transactional
-    public void delete(long hotelId) {
-        this.findById(hotelId);
+    public void delete(long hotelId, String CNPJ) {
+        this.findByIdAndCNPJ(hotelId, CNPJ);
         this.repository.deleteById(hotelId);
     }
 }

@@ -3,8 +3,8 @@ package com.devlukas.hotelreservationsystem.controllers.hotel;
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.HotelToResponse;
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.RequestToHotel;
 import com.devlukas.hotelreservationsystem.controllers.hotel.dto.HotelRequestBody;
-import com.devlukas.hotelreservationsystem.system.Result;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
+import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("${api.endpoint.base-url}/hotel")
-public class HotelController {
+@RequestMapping("${api.endpoint.base-url}/hotel/admin")
+public class HotelControllerAdminUsage {
 
     private final HotelService hotelService;
 
@@ -25,7 +25,7 @@ public class HotelController {
 
     private final HotelToResponse hotelToResponse;
 
-    public HotelController(HotelService hotelService, RequestToHotel requestToHotel, HotelToResponse hotelToResponse) {
+    public HotelControllerAdminUsage(HotelService hotelService, RequestToHotel requestToHotel, HotelToResponse hotelToResponse) {
         this.hotelService = hotelService;
         this.requestToHotel = requestToHotel;
         this.hotelToResponse = hotelToResponse;
@@ -48,25 +48,11 @@ public class HotelController {
                         .data(response).build());
     }
 
-    @GetMapping("/{hotelId}")
-    public ResponseEntity<Result> findHotelById(@PathVariable Long hotelId, HttpServletRequest request) {
-        var hotel = this.hotelService.findById(hotelId);
-        var response = this.hotelToResponse.convert(hotel);
-
-        return ResponseEntity.status(HttpStatus.OK).body(
-                Result.builder()
-                        .path(request.getRequestURI())
-                        .flag(true)
-                        .message("Find success")
-                        .localDateTime(LocalDateTime.now())
-                        .data(response)
-                        .build()
-        );
-    }
-
     @GetMapping
     public ResponseEntity<Result> findAllHotels(HttpServletRequest request) {
-        var hotels = this.hotelService.findAll();
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+
+        var hotels = this.hotelService.findAllByCNPJ(hotelAdminCNPJ);
         var response = hotels.stream().map(this.hotelToResponse::convert).toList();
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -80,9 +66,29 @@ public class HotelController {
         );
     }
 
+    @GetMapping("/{hotelId}")
+    public ResponseEntity<Result> findHotelById(@PathVariable Long hotelId, HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+
+        var hotel = this.hotelService.findByIdAndCNPJ(hotelId, hotelAdminCNPJ);
+        var response = this.hotelToResponse.convert(hotel);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Find success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(response)
+                        .build()
+        );
+    }
+
     @PutMapping("/{hotelId}")
     public ResponseEntity<Result> updateHotel( @PathVariable Long hotelId, @RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
-        var updatedHotel = this.hotelService.update(hotelId, Objects.requireNonNull(this.requestToHotel.convert(requestBody)));
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+
+        var updatedHotel = this.hotelService.update(hotelId, hotelAdminCNPJ, Objects.requireNonNull(this.requestToHotel.convert(requestBody)));
         var response = this.hotelToResponse.convert(updatedHotel);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -98,7 +104,9 @@ public class HotelController {
 
     @DeleteMapping("/{hotelId}")
     public ResponseEntity<Result> deleteHotel(@PathVariable Long hotelId, HttpServletRequest request) {
-        this.hotelService.delete(hotelId);
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+
+        this.hotelService.delete(hotelId, hotelAdminCNPJ);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 Result.builder()
