@@ -8,6 +8,7 @@ import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import com.devlukas.hotelreservationsystem.utils.HotelUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -175,7 +176,7 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
 
         var request = objectMapper.writeValueAsString(requestBody);
 
-        when(this.hotelService.update(anyLong(),anyString(),any(Hotel.class)))
+        when(this.hotelService.updateBasicHotelInfo(anyLong(),anyString(),any(Hotel.class)))
                 .thenReturn(hotel);
 
         // When - Then
@@ -213,7 +214,7 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
 
         var request = objectMapper.writeValueAsString(requestBody);
 
-        when(this.hotelService.update(anyLong(),anyString(),any(Hotel.class)))
+        when(this.hotelService.updateBasicHotelInfo(anyLong(),anyString(),any(Hotel.class)))
                 .thenThrow(new ObjectNotFoundException("Hotel", id));
 
         // When - Then
@@ -227,6 +228,38 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
                 .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testUpdateHotelAddressSuccess() throws Exception {
+        // Given
+        var id = 1L;
+
+        var request = objectMapper.writeValueAsString(address);
+
+        when(this.hotelService.updateHotelAddress(anyLong(), anyString(), any(HotelAddress.class)))
+                .thenReturn(hotel);
+
+        // When - Then
+        this.mockMvc.perform(put(BASE_URL + "/address/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/address/" + id))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.message").value("Hotel Address update success"))
+                .andExpect(jsonPath("$.data.id").value(address.getId()))
+                .andExpect(jsonPath("$.data.country").value(address.getCountry()))
+                .andExpect(jsonPath("$.data.state").value(address.getState()))
+                .andExpect(jsonPath("$.data.city").value(address.getCity()))
+                .andExpect(jsonPath("$.data.district").value(address.getDistrict()))
+                .andExpect(jsonPath("$.data.street").value(address.getStreet()))
+                .andExpect(jsonPath("$.data.number").value(address.getNumber()))
+                .andExpect(jsonPath("$.data.zipCode").value(address.getZipCode()))
+                //.andExpect(jsonPath("$.data.hotelId").value(hotel.getId())) TODO
                 .andDo(MockMvcResultHandlers.print());
     }
 

@@ -1,8 +1,8 @@
 package com.devlukas.hotelreservationsystem.entities.hotel;
 
 import com.devlukas.hotelreservationsystem.entities.room.Room;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,8 +32,9 @@ public class Hotel {
     private String description;
 
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
+    @JsonManagedReference
     private HotelAddress address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hotel")
@@ -68,4 +69,9 @@ public class Hotel {
     public void addRoom(Room room) {
         this.rooms.add(room);
     }
+
+    /*public void updateHotelAddress(HotelAddress hotelAddress) {
+        hotelAddress.setHotel(this);
+        this.setAddress(hotelAddress);
+    }*/
 }

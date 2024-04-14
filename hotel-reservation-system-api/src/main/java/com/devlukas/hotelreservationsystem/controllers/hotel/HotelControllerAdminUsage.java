@@ -3,6 +3,7 @@ package com.devlukas.hotelreservationsystem.controllers.hotel;
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.HotelToResponse;
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.RequestToHotel;
 import com.devlukas.hotelreservationsystem.controllers.hotel.dto.HotelRequestBody;
+import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
@@ -88,7 +89,7 @@ public class HotelControllerAdminUsage {
     public ResponseEntity<Result> updateHotel( @PathVariable Long hotelId, @RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");
 
-        var updatedHotel = this.hotelService.update(hotelId, hotelAdminCNPJ, Objects.requireNonNull(this.requestToHotel.convert(requestBody)));
+        var updatedHotel = this.hotelService.updateBasicHotelInfo(hotelId, hotelAdminCNPJ, Objects.requireNonNull(this.requestToHotel.convert(requestBody)));
         var response = this.hotelToResponse.convert(updatedHotel);
 
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -98,6 +99,23 @@ public class HotelControllerAdminUsage {
                         .message("Update success")
                         .localDateTime(LocalDateTime.now())
                         .data(response)
+                        .build()
+        );
+    }
+
+    @PutMapping("/address/{hotelId}")
+    public ResponseEntity<Result> updateHotelAddress(@PathVariable Long hotelId, @RequestBody HotelAddress hotelAddress, HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+
+        var updatedHotel = this.hotelService.updateHotelAddress(hotelId, hotelAdminCNPJ, hotelAddress);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Hotel Address update success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(updatedHotel.getAddress())
                         .build()
         );
     }

@@ -1,6 +1,7 @@
 package com.devlukas.hotelreservationsystem.services.hotel;
 
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
+import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.repositories.HotelRepository;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class HotelService {
     }
 
     @Transactional
-    public Hotel update(long hotelId, String CNPJ, Hotel updateHotel) {
+    public Hotel updateBasicHotelInfo(long hotelId, String CNPJ, Hotel updateHotel) {
         var oldHotel = this.findByIdAndCNPJ(hotelId, CNPJ);
         oldHotel.setName(updateHotel.getName());
         oldHotel.setEmail(updateHotel.getEmail());
@@ -53,6 +54,13 @@ public class HotelService {
         oldHotel.setAddress(updateHotel.getAddress());
         oldHotel.setDescription(updateHotel.getDescription());
         return this.repository.save(oldHotel);
+    }
+
+    @Transactional
+    public Hotel updateHotelAddress(long hotelId, String CNPJ, HotelAddress hotelAddress) {
+        var hotel = findByIdAndCNPJ(hotelId, CNPJ);
+        hotel.setAddress(hotelAddress);
+        return this.repository.save(hotel);
     }
 
     @Transactional

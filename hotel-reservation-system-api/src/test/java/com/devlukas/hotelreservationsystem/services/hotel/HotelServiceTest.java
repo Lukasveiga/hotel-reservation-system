@@ -134,7 +134,7 @@ class HotelServiceTest implements ServiceTestConfig {
     }
 
     @Test
-    void testUpdateHotelSuccess() {
+    void testUpdateBasicHotelInfoHotelSuccess() {
         // Given
         var updateHotel = HotelUtils.generateHotelEntity(address);
 
@@ -145,14 +145,14 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(hotel);
 
         // When
-        var updatedHotel = this.hotelService.update(1L, hotelAdminCNPJ, updateHotel);
+        var updatedHotel = this.hotelService.updateBasicHotelInfo(1L, hotelAdminCNPJ, updateHotel);
 
         // Then
         assertThat(updatedHotel).usingRecursiveAssertion().isEqualTo(hotel);
     }
 
     @Test
-    void testUpdateHotelErrorHotelNotFound() {
+    void testUpdateBasicHotelInfoHotelErrorHotelNotFound() {
         // Given
         var updateHotel = HotelUtils.generateHotelEntity(address);
 
@@ -160,7 +160,36 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.update(1L, hotelAdminCNPJ, updateHotel))
+        assertThatThrownBy(() -> this.hotelService.updateBasicHotelInfo(1L, hotelAdminCNPJ, updateHotel))
+                .isInstanceOf(ObjectNotFoundException.class)
+                .hasMessage("Could not found Hotel with id 1");
+        verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
+        verify(hotelRepository, times(0)).save(any(Hotel.class));
+    }
+
+    @Test
+    void testUpdateHotelAddressSuccess() {
+        // Given
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
+                .thenReturn(Optional.of(hotel));
+
+        when(this.hotelRepository.save(hotel))
+                .thenReturn(hotel);
+
+        // When
+        var updatedHotelAddress = this.hotelService.updateHotelAddress(1L, hotelAdminCNPJ, address);
+
+        // Then
+        assertThat(updatedHotelAddress).usingRecursiveAssertion().isEqualTo(hotel);
+    }
+    @Test
+    void testUpdateHotelAddressErrorHotelNotFound() {
+        // Given
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
+                .thenReturn(Optional.empty());
+
+        // When - Then
+        assertThatThrownBy(() -> this.hotelService.updateHotelAddress(1L, hotelAdminCNPJ, address))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessage("Could not found Hotel with id 1");
         verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
