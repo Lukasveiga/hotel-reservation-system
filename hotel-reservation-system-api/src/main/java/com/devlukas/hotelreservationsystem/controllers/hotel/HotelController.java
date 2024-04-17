@@ -7,25 +7,23 @@ import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.endpoint.base-url}/hotel/user")
-public class HotelControllerUserUsage {
+@RequestMapping("${api.endpoint.base-url}/hotel")
+public class HotelController {
 
     private final HotelService hotelService;
 
     private final HotelToResponse hotelToResponse;
 
-    public HotelControllerUserUsage(HotelService hotelService, HotelToResponse hotelToResponse) {
+    public HotelController(HotelService hotelService, HotelToResponse hotelToResponse) {
         this.hotelService = hotelService;
         this.hotelToResponse = hotelToResponse;
     }

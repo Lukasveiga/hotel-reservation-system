@@ -37,16 +37,11 @@ public class Hotel {
     @JsonManagedReference
     private HotelAddress address;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hotel")
-    private final Set<Assessments> assessments = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hotel", orphanRemoval = true)
+    private final Set<Assessment> assessments = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "hotel_conveniences",
-            joinColumns = @JoinColumn(name = "hotel_id"),
-            inverseJoinColumns = @JoinColumn(name = "convenience_id")
-    )
-    private final Set<Conveniences> conveniences = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hotel", orphanRemoval = true)
+    private final Set<Convenience> conveniences = new HashSet<>();
 
     @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY)
     private final List<Room> rooms = new ArrayList<>();
@@ -69,9 +64,10 @@ public class Hotel {
     public void addRoom(Room room) {
         this.rooms.add(room);
     }
-
-    /*public void updateHotelAddress(HotelAddress hotelAddress) {
-        hotelAddress.setHotel(this);
-        this.setAddress(hotelAddress);
-    }*/
+    public void addConveniences(Convenience convenience) {
+        this.conveniences.add(convenience);
+    }
+    public void addAssessment(Assessment assessment) {
+        this.assessments.add(assessment);
+    }
 }

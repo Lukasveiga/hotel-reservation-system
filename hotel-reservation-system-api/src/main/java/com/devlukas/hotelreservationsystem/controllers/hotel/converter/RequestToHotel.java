@@ -9,11 +9,13 @@ import org.springframework.stereotype.Component;
 public class RequestToHotel implements Converter<HotelRequestBody, Hotel> {
     @Override
     public Hotel convert(HotelRequestBody source) {
-        return new Hotel(source.name(),
+        Hotel hotel = new Hotel(source.name(),
                 null,
                 source.phone(),
                 source.email(),
                 source.description(),
                 source.address());
+        source.conveniences().forEach(hotel::addConveniences);
+        return hotel;
     }
 }

@@ -1,5 +1,7 @@
 package com.devlukas.hotelreservationsystem.services.hotel;
 
+import com.devlukas.hotelreservationsystem.entities.hotel.Assessment;
+import com.devlukas.hotelreservationsystem.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.repositories.HotelRepository;
@@ -30,12 +32,18 @@ class HotelServiceTest implements ServiceTestConfig {
 
     HotelAddress address;
 
+    Convenience convenience;
+
+    Assessment assessment;
+
     String hotelAdminCNPJ = "87.933.894/0001-50";
 
     @BeforeEach
     void setUp() {
         address = HotelUtils.generateHotelAddress();
-        hotel = HotelUtils.generateHotelEntity(address);
+        convenience = HotelUtils.generateConvenience();
+        assessment = HotelUtils.generateAssessment();
+        hotel = HotelUtils.generateHotelEntity(address, convenience, assessment);
     }
 
     @Test

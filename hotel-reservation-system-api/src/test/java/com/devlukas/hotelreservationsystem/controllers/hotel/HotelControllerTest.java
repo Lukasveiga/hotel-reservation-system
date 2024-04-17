@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class HotelControllerUserUsageTest extends ControllerTestConfig {
+class HotelControllerTest extends ControllerTestConfig {
 
     @Autowired
     MockMvc mockMvc;
@@ -30,7 +30,7 @@ class HotelControllerUserUsageTest extends ControllerTestConfig {
     @MockBean
     HotelService hotelService;
 
-    @Value("${api.endpoint.base-url}/hotel/user")
+    @Value("${api.endpoint.base-url}/hotel")
     String BASE_URL;
 
     Hotel hotel;

@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("${api.endpoint.base-url}/hotel/admin")
-public class HotelControllerAdminUsage {
+public class HotelControllerAdmin {
 
     private final HotelService hotelService;
 
@@ -26,7 +26,7 @@ public class HotelControllerAdminUsage {
 
     private final HotelToResponse hotelToResponse;
 
-    public HotelControllerAdminUsage(HotelService hotelService, RequestToHotel requestToHotel, HotelToResponse hotelToResponse) {
+    public HotelControllerAdmin(HotelService hotelService, RequestToHotel requestToHotel, HotelToResponse hotelToResponse) {
         this.hotelService = hotelService;
         this.requestToHotel = requestToHotel;
         this.hotelToResponse = hotelToResponse;

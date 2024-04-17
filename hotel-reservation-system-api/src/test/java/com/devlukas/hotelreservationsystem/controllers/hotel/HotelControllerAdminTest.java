@@ -3,12 +3,13 @@ package com.devlukas.hotelreservationsystem.controllers.hotel;
 import com.c4_soft.springaddons.security.oauth2.test.annotations.WithJwt;
 import com.devlukas.hotelreservationsystem.ControllerTestConfig;
 import com.devlukas.hotelreservationsystem.controllers.hotel.dto.HotelRequestBody;
+import com.devlukas.hotelreservationsystem.entities.hotel.Assessment;
+import com.devlukas.hotelreservationsystem.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import com.devlukas.hotelreservationsystem.utils.HotelUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithJwt("hotel-admin.json")
-class HotelControllerAdminUsageTest extends ControllerTestConfig {
+class HotelControllerAdminTest extends ControllerTestConfig {
 
     @Autowired
     MockMvc mockMvc;
@@ -48,11 +49,17 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
 
     HotelAddress address;
 
+    Convenience convenience;
+
+    Assessment assessment;
+
     @BeforeEach
     void setUp() {
         address = HotelUtils.generateHotelAddress();
         address.setId(1L);
-        hotel = HotelUtils.generateHotelEntity(address);
+        convenience = HotelUtils.generateConvenience();
+        assessment = HotelUtils.generateAssessment();
+        hotel = HotelUtils.generateHotelEntity(address, convenience, assessment);
         hotel.setId(1L);
     }
 
@@ -64,7 +71,8 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
                 hotel.getPhone(),
                 hotel.getEmail(),
                 hotel.getDescription(),
-                hotel.getAddress()
+                hotel.getAddress(),
+                hotel.getConveniences()
         );
 
         var request = objectMapper.writeValueAsString(requestBody);
@@ -90,6 +98,8 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.data.email").value(requestBody.email()))
                 .andExpect(jsonPath("$.data.description").value(requestBody.description()))
                 .andExpect(jsonPath("$.data.address").isNotEmpty())
+                .andExpect(jsonPath("$.data.conveniences").isNotEmpty())
+                .andExpect(jsonPath("$.data.assessments").isNotEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -171,7 +181,8 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
                 hotel.getPhone(),
                 hotel.getEmail(),
                 hotel.getDescription(),
-                hotel.getAddress()
+                hotel.getAddress(),
+                hotel.getConveniences()
         );
 
         var request = objectMapper.writeValueAsString(requestBody);
@@ -209,7 +220,8 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
                 hotel.getPhone(),
                 hotel.getEmail(),
                 hotel.getDescription(),
-                hotel.getAddress()
+                hotel.getAddress(),
+                hotel.getConveniences()
         );
 
         var request = objectMapper.writeValueAsString(requestBody);
@@ -259,7 +271,6 @@ class HotelControllerAdminUsageTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.data.street").value(address.getStreet()))
                 .andExpect(jsonPath("$.data.number").value(address.getNumber()))
                 .andExpect(jsonPath("$.data.zipCode").value(address.getZipCode()))
-                //.andExpect(jsonPath("$.data.hotelId").value(hotel.getId())) TODO
                 .andDo(MockMvcResultHandlers.print());
     }
 
