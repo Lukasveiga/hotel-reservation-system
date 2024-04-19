@@ -2,12 +2,14 @@ package com.devlukas.hotelreservationsystem.controllers.hotel;
 
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.HotelToResponse;
 import com.devlukas.hotelreservationsystem.controllers.hotel.converter.RequestToHotel;
+import com.devlukas.hotelreservationsystem.controllers.hotel.dto.ConvenienceRequestBody;
 import com.devlukas.hotelreservationsystem.controllers.hotel.dto.HotelRequestBody;
-import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
+import com.devlukas.hotelreservationsystem.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.services.hotel.HotelService;
 import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -86,7 +88,7 @@ public class HotelControllerAdmin {
     }
 
     @PutMapping("/{hotelId}")
-    public ResponseEntity<Result> updateHotel( @PathVariable Long hotelId, @RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
+    public ResponseEntity<Result> updateHotel(@PathVariable Long hotelId, @RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");
 
         var updatedHotel = this.hotelService.updateBasicHotelInfo(hotelId, hotelAdminCNPJ, Objects.requireNonNull(this.requestToHotel.convert(requestBody)));
@@ -103,21 +105,23 @@ public class HotelControllerAdmin {
         );
     }
 
-    @PutMapping("/address/{hotelId}")
-    public ResponseEntity<Result> updateHotelAddress(@PathVariable Long hotelId, @RequestBody HotelAddress hotelAddress, HttpServletRequest request) {
+    @PatchMapping("/{hotelId}")
+    public ResponseEntity<Result> addHotelConvenience(@PathVariable Long hotelId, @RequestBody ConvenienceRequestBody convenienceRequestBody,
+                                                      HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");
 
-        var updatedHotel = this.hotelService.updateHotelAddress(hotelId, hotelAdminCNPJ, hotelAddress);
+        var newConvenience = new Convenience(convenienceRequestBody.description());
+        var updatedHotel = this.hotelService.addConvenience(hotelId, hotelAdminCNPJ, newConvenience);
+        var response = this.hotelToResponse.convert(updatedHotel);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 Result.builder()
                         .path(request.getRequestURI())
                         .flag(true)
-                        .message("Hotel Address update success")
+                        .message("Add convenience success")
                         .localDateTime(LocalDateTime.now())
-                        .data(updatedHotel.getAddress())
-                        .build()
-        );
+                        .data(response)
+                        .build());
     }
 
     @DeleteMapping("/{hotelId}")

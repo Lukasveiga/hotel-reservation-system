@@ -24,4 +24,11 @@ public class Convenience {
     @JoinColumn(name = "hotel_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Hotel hotel;
+
+    public Convenience() {
+    }
+
+    public Convenience(String description) {
+        this.description = description;
+    }
 }

@@ -1,5 +1,6 @@
 package com.devlukas.hotelreservationsystem.services.hotel;
 
+import com.devlukas.hotelreservationsystem.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.repositories.HotelRepository;
@@ -21,6 +22,7 @@ public class HotelService {
     @Transactional
     public Hotel save(Hotel newHotel, String hotelAdminCNPJ) {
         newHotel.setCNPJ(hotelAdminCNPJ);
+        newHotel.getConveniences().forEach(c -> c.setHotel(newHotel));
         return this.repository.save(newHotel);
     }
 
@@ -57,9 +59,10 @@ public class HotelService {
     }
 
     @Transactional
-    public Hotel updateHotelAddress(long hotelId, String CNPJ, HotelAddress hotelAddress) {
-        var hotel = findByIdAndCNPJ(hotelId, CNPJ);
-        hotel.setAddress(hotelAddress);
+    public Hotel addConvenience(long hotelId, String CNPJ, Convenience convenience) {
+        var hotel = this.findByIdAndCNPJ(hotelId, CNPJ);
+        convenience.setHotel(hotel);
+        hotel.addConveniences(convenience);
         return this.repository.save(hotel);
     }
 

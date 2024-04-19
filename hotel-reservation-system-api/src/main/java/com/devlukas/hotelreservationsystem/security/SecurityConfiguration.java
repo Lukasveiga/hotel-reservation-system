@@ -56,7 +56,11 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.
                 authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(HttpMethod.POST, this.base_url + "/hotel/**").hasAuthority("ROLE_hotelAdmin")
+                        .requestMatchers(HttpMethod.POST,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
+                        .requestMatchers(HttpMethod.GET,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
+                        .requestMatchers(HttpMethod.PUT,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
+                        .requestMatchers(HttpMethod.PATCH,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
+                        .requestMatchers(HttpMethod.DELETE,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
                         .requestMatchers(toH2Console()).permitAll()
                         .anyRequest().permitAll()
                 )

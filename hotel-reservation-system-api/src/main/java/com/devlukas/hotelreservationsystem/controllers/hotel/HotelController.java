@@ -32,14 +32,15 @@ public class HotelController {
     public ResponseEntity<Result> findAllHotels(@RequestParam(required = false) String state,
                                                 @RequestParam(required = false) String city,
                                                 HttpServletRequest request) {
-        List<Hotel> hotels;
+
+        List<Hotel> hotels = this.hotelService.findAll();
 
         if(!(state == null) && !state.isBlank()) {
             hotels = this.hotelService.findByState(state);
-        } else if (!(city == null) && !city.isBlank()) {
+        }
+
+        if (!(city == null) && !city.isBlank()) {
             hotels = this.hotelService.findByCity(city);
-        } else {
-            hotels = this.hotelService.findAll();
         }
 
         var response = hotels.stream().map(this.hotelToResponse::convert).toList();

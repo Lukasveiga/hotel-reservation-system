@@ -244,33 +244,48 @@ class HotelControllerAdminTest extends ControllerTestConfig {
     }
 
     @Test
-    void testUpdateHotelAddressSuccess() throws Exception {
+    void testAddHotelConvenienceSuccess() throws Exception {
         // Given
         var id = 1L;
 
-        var request = objectMapper.writeValueAsString(address);
-
-        when(this.hotelService.updateHotelAddress(anyLong(), anyString(), any(HotelAddress.class)))
+        when(this.hotelService.addConvenience(anyLong(), anyString(), any(Convenience.class)))
                 .thenReturn(hotel);
 
         // When - Then
-        this.mockMvc.perform(put(BASE_URL + "/address/" + id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(request)
-                .accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(patch(BASE_URL + "/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(convenience.getDescription())
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/address/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
                 .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.message").value("Add convenience success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
-                .andExpect(jsonPath("$.message").value("Hotel Address update success"))
-                .andExpect(jsonPath("$.data.id").value(address.getId()))
-                .andExpect(jsonPath("$.data.country").value(address.getCountry()))
-                .andExpect(jsonPath("$.data.state").value(address.getState()))
-                .andExpect(jsonPath("$.data.city").value(address.getCity()))
-                .andExpect(jsonPath("$.data.district").value(address.getDistrict()))
-                .andExpect(jsonPath("$.data.street").value(address.getStreet()))
-                .andExpect(jsonPath("$.data.number").value(address.getNumber()))
-                .andExpect(jsonPath("$.data.zipCode").value(address.getZipCode()))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.conveniences").isNotEmpty())
+                .andExpect(jsonPath("$.data.conveniences[0].description").value(convenience.getDescription()))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testAddHotelConvenienceErrorObjectNotFoundException() throws Exception {
+        // Given
+        var id = 1L;
+
+        when(this.hotelService.addConvenience(anyLong(), anyString(), any(Convenience.class)))
+                .thenThrow(new ObjectNotFoundException("Hotel", id));
+
+        // When - Then
+        this.mockMvc.perform(patch(BASE_URL + "/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(convenience.getDescription())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 

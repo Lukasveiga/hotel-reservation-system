@@ -176,8 +176,10 @@ class HotelServiceTest implements ServiceTestConfig {
     }
 
     @Test
-    void testUpdateHotelAddressSuccess() {
+    void testAddConvenienceSuccess() {
         // Given
+        var newConvenience = new Convenience("New Convinience");
+
         when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.of(hotel));
 
@@ -185,19 +187,23 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(hotel);
 
         // When
-        var updatedHotelAddress = this.hotelService.updateHotelAddress(1L, hotelAdminCNPJ, address);
+        var updatedHotel = this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience);
 
         // Then
-        assertThat(updatedHotelAddress).usingRecursiveAssertion().isEqualTo(hotel);
+        assertThat(updatedHotel.getConveniences().contains(newConvenience)).isTrue();
+        verify(this.hotelRepository, times(1)).save(any(Hotel.class));
     }
+
     @Test
-    void testUpdateHotelAddressErrorHotelNotFound() {
+    void testAddConvenienceErrorHotelNotFound() {
         // Given
+        var newConvenience = new Convenience("New Convinience");
+
         when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.updateHotelAddress(1L, hotelAdminCNPJ, address))
+        assertThatThrownBy(() -> this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessage("Could not found Hotel with id 1");
         verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
