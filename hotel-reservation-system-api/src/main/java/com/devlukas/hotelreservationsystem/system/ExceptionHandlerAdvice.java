@@ -1,7 +1,7 @@
 package com.devlukas.hotelreservationsystem.system;
 
-import com.devlukas.hotelreservationsystem.services.exceptions.ObjectNotFoundException;
-import com.devlukas.hotelreservationsystem.services.exceptions.UniqueIdentifierAlreadyExistsException;
+import com.devlukas.hotelreservationsystem.system.exceptions.ObjectNotFoundException;
+import com.devlukas.hotelreservationsystem.system.exceptions.UniqueIdentifierAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
