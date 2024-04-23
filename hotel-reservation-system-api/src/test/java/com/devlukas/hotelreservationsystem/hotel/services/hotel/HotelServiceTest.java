@@ -44,6 +44,7 @@ class HotelServiceTest implements ServiceTestConfig {
         convenience = HotelUtils.generateConvenience();
         assessment = HotelUtils.generateAssessment();
         hotel = HotelUtils.generateHotelEntity(address, convenience, assessment);
+        hotel.setId(1L);
     }
 
     @Test
@@ -183,15 +184,14 @@ class HotelServiceTest implements ServiceTestConfig {
         when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.of(hotel));
 
-        when(this.hotelRepository.save(hotel))
-                .thenReturn(hotel);
+        doNothing().when(this.hotelRepository)
+                .addConvenience(anyLong(), anyString());
 
         // When
-        var updatedHotel = this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience);
+        this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience.getDescription());
 
         // Then
-        assertThat(updatedHotel.getConveniences().contains(newConvenience)).isTrue();
-        verify(this.hotelRepository, times(1)).save(any(Hotel.class));
+        verify(this.hotelRepository, times(1)).addConvenience(anyLong(), anyString());
     }
 
     @Test
@@ -203,7 +203,7 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience))
+        assertThatThrownBy(() -> this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience.getDescription()))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessage("Could not found Hotel with id 1");
         verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());

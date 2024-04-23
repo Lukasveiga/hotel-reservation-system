@@ -252,8 +252,9 @@ class HotelControllerAdminTest extends ControllerTestConfig {
         var convenienceRequestBody = new ConvenienceRequestBody("New Convenience");
         var convenienceRequestBodyJson = objectMapper.writeValueAsString(convenienceRequestBody);
 
-        when(this.hotelService.addConvenience(anyLong(), anyString(), any(Convenience.class)))
-                .thenReturn(hotel);
+        doNothing().when(this.hotelService)
+                .addConvenience(anyLong(), anyString(), anyString());
+
 
         // When - Then
         this.mockMvc.perform(patch(BASE_URL + "/" + id)
@@ -265,9 +266,6 @@ class HotelControllerAdminTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Add convenience success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.conveniences").isNotEmpty())
-                .andExpect(jsonPath("$.data.conveniences[0].description").value(convenience.getDescription()))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -279,8 +277,8 @@ class HotelControllerAdminTest extends ControllerTestConfig {
         var convenienceRequestBody = new ConvenienceRequestBody("New Convenience");
         var convenienceRequestBodyJson = objectMapper.writeValueAsString(convenienceRequestBody);
 
-        when(this.hotelService.addConvenience(anyLong(), anyString(), any(Convenience.class)))
-                .thenThrow(new ObjectNotFoundException("Hotel", id));
+        doThrow(new ObjectNotFoundException("Hotel", id))
+                .when(this.hotelService).addConvenience(anyLong(), anyString(), anyString());
 
         // When - Then
         this.mockMvc.perform(patch(BASE_URL + "/" + id)

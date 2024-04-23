@@ -58,11 +58,16 @@ public class HotelService {
     }
 
     @Transactional
-    public Hotel addConvenience(long hotelId, String CNPJ, Convenience convenience) {
+    public void addConvenience(long hotelId, String CNPJ, String convenienceDescription) {
         var hotel = this.findByIdAndCNPJ(hotelId, CNPJ);
-        convenience.setHotel(hotel);
-        hotel.addConveniences(convenience);
-        return this.repository.save(hotel);
+        this.repository.addConvenience(hotel.getId(), convenienceDescription);
+    }
+
+    @Transactional
+    public int removeConvenience(Long hotelId, String hotelAdminCNPJ, Long convenienceId) {
+        var hotel = this.findByIdAndCNPJ(hotelId, hotelAdminCNPJ);
+        return this.repository.removeConvenience(hotel.getId(), convenienceId);
+
     }
 
     @Transactional

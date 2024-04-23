@@ -4,7 +4,6 @@ import com.devlukas.hotelreservationsystem.hotel.controllers.hotel.converter.Hot
 import com.devlukas.hotelreservationsystem.hotel.controllers.hotel.converter.RequestToHotel;
 import com.devlukas.hotelreservationsystem.hotel.controllers.hotel.dto.ConvenienceRequestBody;
 import com.devlukas.hotelreservationsystem.hotel.controllers.hotel.dto.HotelRequestBody;
-import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.hotel.services.hotel.HotelService;
 import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
@@ -109,9 +108,7 @@ public class HotelControllerAdmin {
                                                       HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");
 
-        var newConvenience = new Convenience(convenienceRequestBody.description());
-        var updatedHotel = this.hotelService.addConvenience(hotelId, hotelAdminCNPJ, newConvenience);
-        var response = this.hotelToResponse.convert(updatedHotel);
+        this.hotelService.addConvenience(hotelId, hotelAdminCNPJ, convenienceRequestBody.description());
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 Result.builder()
@@ -119,8 +116,30 @@ public class HotelControllerAdmin {
                         .flag(true)
                         .message("Add convenience success")
                         .localDateTime(LocalDateTime.now())
-                        .data(response)
                         .build());
+    }
+
+    @PatchMapping("/{hotelId}/convenience/{convenienceId}")
+    public ResponseEntity<Result> removeHotelConvenience(@PathVariable Long hotelId, @PathVariable Long convenienceId,
+                                                         HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+
+        var deletedRows = this.hotelService.removeConvenience(hotelId, hotelAdminCNPJ, convenienceId);
+
+        var message = "Convenience already removed";
+
+        if(deletedRows > 0) {
+            message = "Remove convenience success";
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message(message)
+                        .localDateTime(LocalDateTime.now())
+                        .build()
+        );
     }
 
     @DeleteMapping("/{hotelId}")
