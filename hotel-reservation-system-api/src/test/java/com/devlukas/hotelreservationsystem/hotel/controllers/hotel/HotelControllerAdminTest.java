@@ -59,8 +59,7 @@ class HotelControllerAdminTest extends ControllerTestConfig {
         address = HotelUtils.generateHotelAddress();
         address.setId(1L);
         convenience = HotelUtils.generateConvenience();
-        assessment = HotelUtils.generateAssessment();
-        hotel = HotelUtils.generateHotelEntity(address, convenience, assessment);
+        hotel = HotelUtils.generateHotelEntity(address);
         hotel.setId(1L);
     }
 

@@ -1,7 +1,5 @@
 package com.devlukas.hotelreservationsystem.hotel.services.hotel;
 
-import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Assessment;
-import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.hotel.repositories.HotelRepository;
@@ -32,18 +30,11 @@ class HotelServiceTest implements ServiceTestConfig {
 
     HotelAddress address;
 
-    Convenience convenience;
-
-    Assessment assessment;
-
-    String hotelAdminCNPJ = "87.933.894/0001-50";
-
     @BeforeEach
     void setUp() {
         address = HotelUtils.generateHotelAddress();
-        convenience = HotelUtils.generateConvenience();
-        assessment = HotelUtils.generateAssessment();
-        hotel = HotelUtils.generateHotelEntity(address, convenience, assessment);
+        address.setId(1L);
+        hotel = HotelUtils.generateHotelEntity(address);
         hotel.setId(1L);
     }
 
@@ -54,11 +45,11 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(hotel);
 
         // When
-        var savedHotel = this.hotelService.save(hotel, hotelAdminCNPJ);
+        var savedHotel = this.hotelService.save(hotel, hotel.getCNPJ());
 
         // Then
         assertThat(savedHotel).usingRecursiveAssertion().isEqualTo(hotel);
-        assertThat(savedHotel.getCNPJ()).isEqualTo(hotelAdminCNPJ);
+        assertThat(savedHotel.getCNPJ()).isEqualTo(hotel.getCNPJ());
     }
 
     @Test
@@ -82,7 +73,7 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(List.of(hotel));
 
         // When
-        var hotels = this.hotelService.findAllByCNPJ(hotelAdminCNPJ);
+        var hotels = this.hotelService.findAllByCNPJ(hotel.getCNPJ());
 
         // Then
         assertThat(hotels.size()).isEqualTo(1);
@@ -96,7 +87,7 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(Optional.of(hotel));
 
         // When
-        var foundHotel = this.hotelService.findByIdAndCNPJ(1L, hotelAdminCNPJ);
+        var foundHotel = this.hotelService.findByIdAndCNPJ(hotel.getId(), hotel.getCNPJ());
 
         // Then
         assertThat(foundHotel).usingRecursiveAssertion().isEqualTo(hotel);
@@ -109,9 +100,9 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.findByIdAndCNPJ(1L, hotelAdminCNPJ))
+        assertThatThrownBy(() -> this.hotelService.findByIdAndCNPJ(hotel.getId(), hotel.getCNPJ()))
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessage("Could not found Hotel with id 1");
+                .hasMessage("Could not found Hotel with id " + hotel.getId());
     }
 
     @Test
@@ -154,7 +145,7 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(hotel);
 
         // When
-        var updatedHotel = this.hotelService.updateBasicHotelInfo(1L, hotelAdminCNPJ, updateHotel);
+        var updatedHotel = this.hotelService.updateBasicHotelInfo(hotel.getId(), hotel.getCNPJ(), updateHotel);
 
         // Then
         assertThat(updatedHotel).usingRecursiveAssertion().isEqualTo(hotel);
@@ -169,9 +160,9 @@ class HotelServiceTest implements ServiceTestConfig {
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.updateBasicHotelInfo(1L, hotelAdminCNPJ, updateHotel))
+        assertThatThrownBy(() -> this.hotelService.updateBasicHotelInfo(hotel.getId(), hotel.getCNPJ(), updateHotel))
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessage("Could not found Hotel with id 1");
+                .hasMessage("Could not found Hotel with id " + hotel.getId());
         verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
         verify(hotelRepository, times(0)).save(any(Hotel.class));
     }
@@ -179,7 +170,7 @@ class HotelServiceTest implements ServiceTestConfig {
     @Test
     void testAddConvenienceSuccess() {
         // Given
-        var newConvenience = new Convenience("New Convinience");
+        var newConvenience = HotelUtils.generateConvenience();
 
         when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.of(hotel));
@@ -188,7 +179,7 @@ class HotelServiceTest implements ServiceTestConfig {
                 .addConvenience(anyLong(), anyString());
 
         // When
-        this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience.getDescription());
+        this.hotelService.addConvenience(hotel.getId(), hotel.getCNPJ(), newConvenience.getDescription());
 
         // Then
         verify(this.hotelRepository, times(1)).addConvenience(anyLong(), anyString());
@@ -197,17 +188,51 @@ class HotelServiceTest implements ServiceTestConfig {
     @Test
     void testAddConvenienceErrorHotelNotFound() {
         // Given
-        var newConvenience = new Convenience("New Convinience");
+        var newConvenience = HotelUtils.generateConvenience();
 
         when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(Optional.empty());
 
         // When - Then
-        assertThatThrownBy(() -> this.hotelService.addConvenience(1L, hotelAdminCNPJ, newConvenience.getDescription()))
+        assertThatThrownBy(() -> this.hotelService.addConvenience(hotel.getId(), hotel.getCNPJ(), newConvenience.getDescription()))
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessage("Could not found Hotel with id 1");
+                .hasMessage("Could not found Hotel with id " + hotel.getId());
         verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
         verify(hotelRepository, times(0)).save(any(Hotel.class));
+    }
+
+    @Test
+    void testRemoveConvenienceSuccess() {
+        // Given
+        var convenienceId = 1L;
+
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
+                .thenReturn(Optional.of(hotel));
+
+        when(this.hotelRepository.removeConvenience(anyLong(), anyLong()))
+                .thenReturn(1);
+
+        // When
+        var result = this.hotelService.removeConvenience(hotel.getId(), hotel.getCNPJ(), convenienceId);
+
+        // Then
+        assertThat(result).isEqualTo(1);
+    }
+
+    @Test
+    void testRemoveConvenienceErrorHotelNotFound() {
+        // Given
+        var convenienceId = 1L;
+
+        when(this.hotelRepository.findByIdAndCNPJ(anyLong(), anyString()))
+                .thenReturn(Optional.empty());
+
+        // When - Then
+        assertThatThrownBy(() -> this.hotelService.removeConvenience(hotel.getId(), hotel.getCNPJ(), convenienceId))
+                .isInstanceOf(ObjectNotFoundException.class)
+                .hasMessage("Could not found Hotel with id " + hotel.getId());
+        verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
+        verify(hotelRepository, times(0)).removeConvenience(anyLong(), anyLong());
     }
 
     @Test
@@ -219,7 +244,7 @@ class HotelServiceTest implements ServiceTestConfig {
         doNothing().when(this.hotelRepository).deleteById(anyLong());
 
         // When
-        this.hotelService.delete(1L,hotelAdminCNPJ);
+        this.hotelService.delete(hotel.getId(), hotel.getCNPJ());
 
         // Then
         verify(this.hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
@@ -235,9 +260,9 @@ class HotelServiceTest implements ServiceTestConfig {
         // When - Then
 
 
-        assertThatThrownBy(() -> this.hotelService.delete(1L, hotelAdminCNPJ))
+        assertThatThrownBy(() -> this.hotelService.delete(hotel.getId(), hotel.getCNPJ()))
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessage("Could not found Hotel with id 1");
+                .hasMessage("Could not found Hotel with id " + hotel.getId());
         verify(hotelRepository, times(1)).findByIdAndCNPJ(anyLong(), anyString());
         verify(this.hotelRepository, times(0)).deleteById(anyLong());
     }

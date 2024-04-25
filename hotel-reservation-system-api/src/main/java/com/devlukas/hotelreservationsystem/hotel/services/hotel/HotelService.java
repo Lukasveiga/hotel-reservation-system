@@ -1,6 +1,5 @@
 package com.devlukas.hotelreservationsystem.hotel.services.hotel;
 
-import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.hotel.repositories.HotelRepository;
 import com.devlukas.hotelreservationsystem.system.exceptions.ObjectNotFoundException;
