@@ -52,8 +52,6 @@ class HotelControllerAdminTest extends ControllerTestConfig {
 
     Convenience convenience;
 
-    Assessment assessment;
-
     @BeforeEach
     void setUp() {
         address = HotelUtils.generateHotelAddress();
@@ -98,15 +96,15 @@ class HotelControllerAdminTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.data.email").value(requestBody.email()))
                 .andExpect(jsonPath("$.data.description").value(requestBody.description()))
                 .andExpect(jsonPath("$.data.address").isNotEmpty())
-                .andExpect(jsonPath("$.data.conveniences").isNotEmpty())
-                .andExpect(jsonPath("$.data.assessments").isNotEmpty())
+                .andExpect(jsonPath("$.data.conveniences").isEmpty())
+                .andExpect(jsonPath("$.data.assessments").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     void testFindHotelByIdSuccess() throws Exception {
         // Given
-        var id = 1L;
+        var id = hotel.getId();
 
         when(this.hotelService.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenReturn(hotel);
@@ -125,13 +123,15 @@ class HotelControllerAdminTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.data.email").value(hotel.getEmail()))
                 .andExpect(jsonPath("$.data.description").value(hotel.getDescription()))
                 .andExpect(jsonPath("$.data.address").isNotEmpty())
+                .andExpect(jsonPath("$.data.conveniences").isEmpty())
+                .andExpect(jsonPath("$.data.assessments").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     void testFindHotelByIdErrorObjectNotFoundException() throws Exception {
         // Given
-        var id = 1L;
+        var id = hotel.getId();
 
         when(this.hotelService.findByIdAndCNPJ(anyLong(), anyString()))
                 .thenThrow(new ObjectNotFoundException("Hotel", id));
@@ -168,6 +168,8 @@ class HotelControllerAdminTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.data[0].email").value(hotel.getEmail()))
                 .andExpect(jsonPath("$.data[0].description").value(hotel.getDescription()))
                 .andExpect(jsonPath("$.data[0].address").isNotEmpty())
+                .andExpect(jsonPath("$.data[0].conveniences").isEmpty())
+                .andExpect(jsonPath("$.data[0].assessments").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 

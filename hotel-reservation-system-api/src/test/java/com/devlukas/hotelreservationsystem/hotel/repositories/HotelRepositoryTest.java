@@ -74,7 +74,7 @@ class HotelRepositoryTest {
         var convenienceDescription = "New convenience";
 
         // When
-        entityManager.clear(); // clear the cache and force hotelRepository.findByIdAndCNPJ from database
+        entityManager.clear(); // clear the first-level cache
 
         this.hotelRepository.addConvenience(hotelId, convenienceDescription);
         var result = this.hotelRepository.findByIdAndCNPJ(hotelOne.getId(), hotelOne.getCNPJ())
@@ -95,7 +95,7 @@ class HotelRepositoryTest {
         var convenienceDescription = "New convenience";
 
         // When
-        entityManager.clear(); // clear the cache and force hotelRepository.findByIdAndCNPJ from database
+        entityManager.clear();
 
         this.hotelRepository.addConvenience(hotelId, convenienceDescription);
         var result = this.hotelRepository.findByIdAndCNPJ(hotelOne.getId(), hotelOne.getCNPJ())
