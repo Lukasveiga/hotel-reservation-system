@@ -24,6 +24,7 @@ public class HotelAdminService {
                     throw new UniqueIdentifierAlreadyExistsException("CNPJ");
         });
         hotelAdmin.setPassword(this.encoder.encode(hotelAdmin.getPassword()));
+        hotelAdmin.setRoles("hotelAdmin");
         return this.hotelAdminRepository.save(hotelAdmin);
     }
 }

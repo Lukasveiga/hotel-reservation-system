@@ -12,7 +12,6 @@ public class RequestToHotelAdmin implements Converter<HotelAdminRequestBody, Hot
         var hotel = new HotelAdmin();
         hotel.setCNPJ(source.CNPJ());
         hotel.setPassword(source.password());
-        hotel.setRoles(source.roles());
         return hotel;
     }
 }

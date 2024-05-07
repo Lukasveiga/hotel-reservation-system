@@ -8,6 +8,7 @@ import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class HotelAdminController {
     }
 
     @PostMapping
-    public ResponseEntity<Result> saveHotelAdmin(@RequestBody HotelAdminRequestBody requestBody, HttpServletRequest request) {
+    public ResponseEntity<Result> saveHotelAdmin(@RequestBody @Validated HotelAdminRequestBody requestBody, HttpServletRequest request) {
         var hotel = this.requestToHotelAdmin.convert(requestBody);
         var savedHotel = this.hotelAdminService.save(Objects.requireNonNull(hotel));
         var response = this.hotelAdminToResponse.convert(savedHotel);
@@ -39,7 +40,7 @@ public class HotelAdminController {
                 Result.builder()
                         .path(request.getRequestURI())
                         .flag(true)
-                        .message("Add success")
+                        .message("Add hotel admin account success")
                         .localDateTime(LocalDateTime.now())
                         .data(response)
                         .build()
