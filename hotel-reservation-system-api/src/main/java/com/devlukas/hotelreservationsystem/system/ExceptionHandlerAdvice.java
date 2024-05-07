@@ -3,15 +3,26 @@ package com.devlukas.hotelreservationsystem.system;
 import com.devlukas.hotelreservationsystem.system.exceptions.ObjectNotFoundException;
 import com.devlukas.hotelreservationsystem.system.exceptions.UniqueIdentifierAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
 
     @ExceptionHandler(UniqueIdentifierAlreadyExistsException.class)
     ResponseEntity<Result> handleUniqueIdentifierAlreadyExistsException(UniqueIdentifierAlreadyExistsException ex, HttpServletRequest request) {
@@ -21,7 +32,6 @@ public class ExceptionHandlerAdvice {
                         .flag(false)
                         .localDateTime(LocalDateTime.now())
                         .message(ex.getMessage())
-                        .data(null)
                         .build()
         );
     }
@@ -34,7 +44,55 @@ public class ExceptionHandlerAdvice {
                         .flag(false)
                         .localDateTime(LocalDateTime.now())
                         .message(ex.getMessage())
-                        .data(null)
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    ResponseEntity<Result> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+
+        List<ObjectError> errors = ex.getBindingResult().getAllErrors();
+        Map<String, String> map = new HashMap<>(errors.size());
+
+        errors.forEach((error) -> {
+            String key = ((FieldError) error).getField();
+            String val = error.getDefaultMessage();
+            map.put(key, val);
+        });
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(false)
+                        .localDateTime(LocalDateTime.now())
+                        .message("Provided arguments are invalid, see data for details")
+                        .data(map)
+                        .build()
+
+        );
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    ResponseEntity<Result> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(false)
+                        .localDateTime(LocalDateTime.now())
+                        .message("API endpoint not found")
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<Result> handleOthersExceptions(Exception ex, HttpServletRequest request) {
+        LOGGER.info(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(false)
+                        .localDateTime(LocalDateTime.now())
+                        .message("Internal Server Error")
                         .build()
         );
     }
