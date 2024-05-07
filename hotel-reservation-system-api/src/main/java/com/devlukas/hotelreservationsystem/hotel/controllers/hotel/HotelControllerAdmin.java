@@ -126,7 +126,7 @@ public class HotelControllerAdmin {
 
         var deletedRows = this.hotelService.removeConvenience(hotelId, hotelAdminCNPJ, convenienceId);
 
-        var message = "Convenience already removed";
+        var message = "Convenience already removed or not exist";
 
         if(deletedRows > 0) {
             message = "Remove convenience success";

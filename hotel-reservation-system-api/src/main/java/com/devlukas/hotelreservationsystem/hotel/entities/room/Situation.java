@@ -1,20 +1,16 @@
 package com.devlukas.hotelreservationsystem.hotel.entities.room;
 
+import lombok.Getter;
+
+@Getter
 public enum Situation {
 
     AVAILABLE("Available"), UNAVAILABLE("Unavailable");
 
-    private String situation;
+    private final String situation;
 
     Situation(String situation) {
         this.situation = situation;
     }
 
-    public String getSituation() {
-        return situation;
-    }
-
-    public void setSituation(String situation) {
-        this.situation = situation;
-    }
 }
