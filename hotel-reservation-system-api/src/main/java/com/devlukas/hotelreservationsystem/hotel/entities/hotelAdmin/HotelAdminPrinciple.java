@@ -9,13 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class HotelAdminPrinciple implements UserDetails {
-
-    private final HotelAdmin hotelAdmin;
-
-    public HotelAdminPrinciple(HotelAdmin hotelAdmin) {
-        this.hotelAdmin = hotelAdmin;
-    }
+public record HotelAdminPrinciple(HotelAdmin hotelAdmin) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,9 +45,5 @@ public class HotelAdminPrinciple implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public HotelAdmin getHotelAdmin() {
-        return hotelAdmin;
     }
 }

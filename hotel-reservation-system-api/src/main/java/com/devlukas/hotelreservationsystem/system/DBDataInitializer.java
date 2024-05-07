@@ -21,7 +21,7 @@ public class DBDataInitializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         var description = "Um resort de luxo cinco estrelas comandado pelo Conde Drácula, onde os monstros podem se divertir e" +
                 "possam descansar do árduo trabalho de perseguir e assustar os humanos.";
 

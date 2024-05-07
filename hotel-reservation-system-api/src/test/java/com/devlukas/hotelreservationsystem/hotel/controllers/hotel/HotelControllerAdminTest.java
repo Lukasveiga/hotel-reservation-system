@@ -4,7 +4,6 @@ import com.c4_soft.springaddons.security.oauth2.test.annotations.WithJwt;
 import com.devlukas.hotelreservationsystem.ControllerTestConfig;
 import com.devlukas.hotelreservationsystem.hotel.controllers.hotel.dto.ConvenienceRequestBody;
 import com.devlukas.hotelreservationsystem.hotel.controllers.hotel.dto.HotelRequestBody;
-import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Assessment;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.HotelAddress;
@@ -24,10 +23,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

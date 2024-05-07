@@ -23,7 +23,7 @@ public class AuthService {
 
     public Map<String, Object> createLoginInfo(Authentication authentication) {
         var principal = (HotelAdminPrinciple) authentication.getPrincipal();
-        var hotelAdmin = principal.getHotelAdmin();
+        var hotelAdmin = principal.hotelAdmin();
 
         var token = this.jwtProvider.generateAccessToken(authentication);
         Map<String, Object> loginResultMap = new HashMap<>();
