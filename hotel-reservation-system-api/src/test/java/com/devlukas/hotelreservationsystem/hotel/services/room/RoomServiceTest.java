@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class RoomServiceTest implements ServiceTestConfig {
