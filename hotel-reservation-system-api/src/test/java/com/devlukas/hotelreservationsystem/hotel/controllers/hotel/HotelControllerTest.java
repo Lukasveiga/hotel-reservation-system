@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,15 +70,38 @@ class HotelControllerTest extends ControllerTestConfig {
     }
 
     @Test
+    void testFindAllHotelsPageableSuccess() throws Exception {
+        // Given
+        when(this.hotelService.findAllPageable(anyInt(), anyInt()))
+                .thenReturn(List.of(hotel));
+
+        // When - Then
+        this.mockMvc.perform(get(BASE_URL +"?page=1&size=5").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value(BASE_URL))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.message").value("Find all success"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data[0].id").value(1))
+                .andExpect(jsonPath("$.data[0].name").value(hotel.getName()))
+                .andExpect(jsonPath("$.data[0].CNPJ").value(hotel.getCNPJ()))
+                .andExpect(jsonPath("$.data[0].phone").value(hotel.getPhone()))
+                .andExpect(jsonPath("$.data[0].email").value(hotel.getEmail()))
+                .andExpect(jsonPath("$.data[0].description").value(hotel.getDescription()))
+                .andExpect(jsonPath("$.data[0].address").isNotEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void testFindHotelsByState() throws Exception {
         // Given
         when(this.hotelService.findByState(anyString()))
                 .thenReturn(List.of(hotel));
 
         // When - Then
-        this.mockMvc.perform(get(BASE_URL + "?state=" + hotel.getAddress().getState()).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(BASE_URL + "/filter?state=" + hotel.getAddress().getState()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value(BASE_URL))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/filter"))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Find all success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -98,9 +122,9 @@ class HotelControllerTest extends ControllerTestConfig {
                 .thenReturn(List.of(hotel));
 
         // When - Then
-        this.mockMvc.perform(get(BASE_URL + "?city=" + hotel.getAddress().getCity()).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(BASE_URL + "/filter?city=" + hotel.getAddress().getCity()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value(BASE_URL))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/filter"))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Find all success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())

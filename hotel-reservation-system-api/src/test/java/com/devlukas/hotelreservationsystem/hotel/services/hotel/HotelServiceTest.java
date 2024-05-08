@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +61,20 @@ class HotelServiceTest implements ServiceTestConfig {
 
         // When
         var hotels = this.hotelService.findAll();
+
+        // Then
+        assertThat(hotels.size()).isEqualTo(1);
+        assertThat(hotels.get(0)).usingRecursiveAssertion().isEqualTo(hotel);
+    }
+
+    @Test
+    void testFindAllHotelsPageableSuccess() {
+        // Given
+        when(this.hotelRepository.findAll(any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(List.of(hotel)));
+
+        // When
+        var hotels = this.hotelService.findAllPageable(1,1);
 
         // Then
         assertThat(hotels.size()).isEqualTo(1);
