@@ -3,6 +3,7 @@ package com.devlukas.hotelreservationsystem.hotel.services.hotel;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.hotel.repositories.HotelRepository;
 import com.devlukas.hotelreservationsystem.system.exceptions.ObjectNotFoundException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,11 @@ public class HotelService {
 
     public List<Hotel> findAll() {
         return this.repository.findAll();
+    }
+
+    public List<Hotel> findAllPageable(int page, int size) {
+        var pageable = PageRequest.of(page, size);
+        return this.repository.findAll(pageable).getContent();
     }
 
     public List<Hotel> findAllByCNPJ(String CNPJ) {

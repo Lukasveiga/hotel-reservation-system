@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,11 +30,36 @@ public class HotelController {
     }
 
     @GetMapping
-    public ResponseEntity<Result> findAllHotels(@RequestParam(required = false) String state,
+    public ResponseEntity<Result> findAllHotels(@RequestParam(required = false) Integer page,
+                                                @RequestParam(required = false) Integer size,
+                                                HttpServletRequest request) {
+        List<Hotel> hotels;
+
+        if(page != null && size != null) {
+            hotels = this.hotelService.findAllPageable(page, size);
+        } else {
+            hotels = this.hotelService.findAll();
+        }
+
+        var response = hotels.stream().map(this.hotelToResponse::convert).toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Find all success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(response)
+                        .build()
+        );
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Result> findAllHotelsByStateOrCity(@RequestParam(required = false) String state,
                                                 @RequestParam(required = false) String city,
                                                 HttpServletRequest request) {
 
-        List<Hotel> hotels = this.hotelService.findAll();
+        List<Hotel> hotels = new ArrayList<>();
 
         if(!(state == null) && !state.isBlank()) {
             hotels = this.hotelService.findByState(state);
