@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public class HotelControllerAdmin {
     }
 
     @PostMapping
-    public ResponseEntity<Result> saveHotel(@RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
+    public ResponseEntity<Result> saveHotel(@RequestBody @Validated HotelRequestBody requestBody, HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");
 
         var newHotel = this.requestToHotel.convert(requestBody);
