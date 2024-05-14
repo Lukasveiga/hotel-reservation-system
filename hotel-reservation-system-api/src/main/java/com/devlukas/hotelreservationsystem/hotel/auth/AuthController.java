@@ -1,5 +1,7 @@
 package com.devlukas.hotelreservationsystem.hotel.auth;
 
+import com.devlukas.hotelreservationsystem.hotel.auth.converter.HotelAdminEntityToHotelAdminDto;
+import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdmin;
 import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -21,13 +23,21 @@ public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
+    private final HotelAdminEntityToHotelAdminDto hotelAdminEntityToHotelAdminDto;
+
+    public AuthController(AuthService authService, HotelAdminEntityToHotelAdminDto hotelAdminEntityToHotelAdminDto) {
         this.authService = authService;
+        this.hotelAdminEntityToHotelAdminDto = hotelAdminEntityToHotelAdminDto;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Result> getLoginInfo(Authentication authentication, HttpServletRequest request) {
         LOGGER.debug("Authenticated hotel admin: '{}'", authentication.getName());
+
+        var loginResult = this.authService.createLoginInfo(authentication);
+        loginResult.replace("hotelAdminInfo",
+                this.hotelAdminEntityToHotelAdminDto.convert((HotelAdmin) loginResult.get("hotelAdminInfo")));
+
         return ResponseEntity.status(HttpStatus.OK).body(
                 Result.builder()
                         .path(request.getRequestURI())

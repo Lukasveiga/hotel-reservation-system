@@ -1,6 +1,5 @@
 package com.devlukas.hotelreservationsystem.hotel.auth;
 
-import com.devlukas.hotelreservationsystem.hotel.auth.converter.HotelAdminEntityToHotelAdminDto;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdminPrinciple;
 import com.devlukas.hotelreservationsystem.security.JWTProvider;
 import org.springframework.security.core.Authentication;
@@ -14,11 +13,8 @@ public class AuthService {
 
     private final JWTProvider jwtProvider;
 
-    private final HotelAdminEntityToHotelAdminDto hotelAdminEntityToHotelAdminDto;
-
-    public AuthService(JWTProvider jwtProvider, HotelAdminEntityToHotelAdminDto hotelAdminEntityToHotelAdminDto) {
+    public AuthService(JWTProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
-        this.hotelAdminEntityToHotelAdminDto = hotelAdminEntityToHotelAdminDto;
     }
 
     public Map<String, Object> createLoginInfo(Authentication authentication) {
@@ -28,9 +24,7 @@ public class AuthService {
         var token = this.jwtProvider.generateAccessToken(authentication);
         Map<String, Object> loginResultMap = new HashMap<>();
 
-        var hotelAdminDto = this.hotelAdminEntityToHotelAdminDto.convert(hotelAdmin);
-
-        loginResultMap.put("hotelAdminInfo", hotelAdminDto);
+        loginResultMap.put("hotelAdminInfo", hotelAdmin);
         loginResultMap.put("token", token);
 
         return loginResultMap;
