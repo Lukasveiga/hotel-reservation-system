@@ -44,7 +44,7 @@ public class AuthController {
                         .flag(true)
                         .message("Hotel Admin Access Token")
                         .localDateTime(LocalDateTime.now())
-                        .data(this.authService.createLoginInfo(authentication))
+                        .data(loginResult)
                         .build()
         );
     }
