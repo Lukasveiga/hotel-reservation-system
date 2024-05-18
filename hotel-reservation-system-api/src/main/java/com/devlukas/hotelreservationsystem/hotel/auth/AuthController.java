@@ -30,7 +30,7 @@ public class AuthController {
         this.hotelAdminEntityToHotelAdminDto = hotelAdminEntityToHotelAdminDto;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login-admin")
     public ResponseEntity<Result> getLoginInfo(Authentication authentication, HttpServletRequest request) {
         LOGGER.debug("Authenticated hotel admin: '{}'", authentication.getName());
 
