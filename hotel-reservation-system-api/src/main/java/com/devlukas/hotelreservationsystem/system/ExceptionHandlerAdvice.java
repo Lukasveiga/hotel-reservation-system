@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -69,6 +71,18 @@ public class ExceptionHandlerAdvice {
                         .data(map)
                         .build()
 
+        );
+    }
+
+    @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
+    ResponseEntity<Result> handleAuthenticationException(Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(false)
+                        .localDateTime(LocalDateTime.now())
+                        .message("Incorrect credentials")
+                        .build()
         );
     }
 

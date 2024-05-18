@@ -9,6 +9,8 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,14 +25,13 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
 public class SecurityConfiguration {
@@ -42,7 +43,10 @@ public class SecurityConfiguration {
     @Value("${api.endpoint.base-url}")
     private String base_url;
 
-    public SecurityConfiguration() throws NoSuchAlgorithmException {
+    private final CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
+
+    public SecurityConfiguration(CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint) throws NoSuchAlgorithmException {
+        this.customBasicAuthenticationEntryPoint = customBasicAuthenticationEntryPoint;
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048); // 2048 bits size
 
@@ -53,20 +57,40 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.
-                authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(HttpMethod.POST,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
-                        .requestMatchers(HttpMethod.GET,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
-                        .requestMatchers(HttpMethod.PUT,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
-                        .requestMatchers(HttpMethod.PATCH,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
-                        .requestMatchers(HttpMethod.DELETE,this.base_url + "/hotel/admin/**").hasAuthority("ROLE_hotelAdmin")
-                        .requestMatchers(toH2Console()).permitAll()
-                        .anyRequest().permitAll()
-                )
+    @Order(1)
+    @Profile("dev")
+    public SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher(AntPathRequestMatcher.antMatcher("/h2-console/**"))
+                .authorizeHttpRequests(authorizeHttpRequests ->
+                        authorizeHttpRequests.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(Customizer.withDefaults())
+                .build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers(HttpMethod.GET, this.base_url + "/hotel/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, this.base_url + "/hotel-admin").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .anyRequest().authenticated())
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(this.customBasicAuthenticationEntryPoint))
+                .build();
+    }
+
+    @Bean
+    @Order(3)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher(this.base_url + "/hotel/admin/**")
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .anyRequest().hasAuthority("ROLE_hotelAdmin")
+                )
                 .oauth2ResourceServer(ouath2 -> ouath2.jwt(Customizer.withDefaults()))
                 .build();
     }
