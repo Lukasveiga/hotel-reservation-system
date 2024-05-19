@@ -1,7 +1,7 @@
 package com.devlukas.hotelreservationsystem.hotel.auth;
 
 import com.devlukas.hotelreservationsystem.hotel.auth.converter.HotelAdminEntityToHotelAdminDto;
-import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdmin;
+import com.devlukas.hotelreservationsystem.hotel.entities.admin.Admin;
 import com.devlukas.hotelreservationsystem.system.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("${api.endpoint.base-url}/hotel")
+@RequestMapping("${api.endpoint.base-url}/hotel/login")
 public class AuthController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
@@ -30,13 +30,13 @@ public class AuthController {
         this.hotelAdminEntityToHotelAdminDto = hotelAdminEntityToHotelAdminDto;
     }
 
-    @PostMapping("/login-admin")
+    @PostMapping()
     public ResponseEntity<Result> getLoginInfo(Authentication authentication, HttpServletRequest request) {
         LOGGER.debug("Authenticated hotel admin: '{}'", authentication.getName());
 
         var loginResult = this.authService.createLoginInfo(authentication);
         loginResult.replace("hotelAdminInfo",
-                this.hotelAdminEntityToHotelAdminDto.convert((HotelAdmin) loginResult.get("hotelAdminInfo")));
+                this.hotelAdminEntityToHotelAdminDto.convert((Admin) loginResult.get("hotelAdminInfo")));
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 Result.builder()

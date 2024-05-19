@@ -1,9 +1,9 @@
-package com.devlukas.hotelreservationsystem.hotel.controllers.hotelAdmin.dto;
+package com.devlukas.hotelreservationsystem.hotel.controllers.admin.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record HotelAdminRequestBody(
+public record AdminRequestBody(
         @NotBlank(message = "Cannot be empty or null")
         String CNPJ,
         @NotBlank(message = "Cannot be empty or null")

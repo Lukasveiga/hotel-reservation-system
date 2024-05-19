@@ -1,70 +1,92 @@
-package com.devlukas.hotelreservationsystem.hotel.integration;
+package com.devlukas.hotelreservationsystem.hotel.controllers.admin;
 
-import com.devlukas.hotelreservationsystem.IntegrationTestConfig;
-import com.devlukas.hotelreservationsystem.hotel.controllers.hotelAdmin.dto.HotelAdminRequestBody;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.devlukas.hotelreservationsystem.ControllerTestConfig;
+import com.devlukas.hotelreservationsystem.hotel.controllers.admin.dto.AdminRequestBody;
+import com.devlukas.hotelreservationsystem.hotel.entities.admin.Admin;
+import com.devlukas.hotelreservationsystem.system.exceptions.UniqueIdentifierAlreadyExistsException;
+import com.devlukas.hotelreservationsystem.hotel.services.admin.AdminService;
+import com.devlukas.hotelreservationsystem.hotel.utils.AdminUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class HotelAdminControllerIT extends IntegrationTestConfig {
+
+class AdminControllerTest extends ControllerTestConfig {
 
     @Autowired
     MockMvc mockMvc;
 
+    @MockBean
+    AdminService adminService;
+
     @Autowired
     ObjectMapper objectMapper;
 
-    @Value(value = "${api.endpoint.base-url}/hotel-admin")
+    Admin admin;
+
+    @Value("${api.endpoint.base-url}/hotel/account")
     String BASE_URL;
 
-    HotelAdminRequestBody request;
-
-    String requestJson;
-
     @BeforeEach
-    void setUp() throws JsonProcessingException {
-        request = new HotelAdminRequestBody("18.104.644/0001-95", "test12345");
-
-        requestJson = this.objectMapper.writeValueAsString(request);
+    void setUp() {
+        admin = AdminUtils.generateHotelAdminEntity();
     }
 
     @Test
-    void testCreateHotelAdminAccountSuccess() throws Exception {
+    void testSaveNewHotelAdminAccountSuccess() throws Exception {
+        // Given
+        var hotelAdminDto = new AdminRequestBody(
+                admin.getCNPJ(), admin.getPassword());
+
+        var hotelAdminDtoJson = this.objectMapper.writeValueAsString(hotelAdminDto);
+
+        when(this.adminService.save(any(Admin.class)))
+                .thenReturn(admin);
+
         // When - Then
-        this.mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson)
-                .accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(hotelAdminDtoJson).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Add hotel admin account success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
-                .andExpect(jsonPath("$.data.id").isNotEmpty())
-                .andExpect(jsonPath("$.data.CNPJ").value(request.CNPJ()))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.CNPJ").value(hotelAdminDto.CNPJ()))
                 .andExpect(jsonPath("$.data.roles").value("hotelAdmin"))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void testCreateHotelAdminAccountSuccessBadRequestUniqueIdentifierAlreadyExists() throws Exception {
+    void testSaveNewHotelAdminAccountErrorUniqueIdentifierAlreadyExists() throws Exception {
+        // Given
+        var hotelAdminDto = new AdminRequestBody(
+                admin.getCNPJ(), admin.getPassword());
+
+        var hotelAdminDtoJson = this.objectMapper.writeValueAsString(hotelAdminDto);
+
+        when(this.adminService.save(any(Admin.class)))
+                .thenThrow(new UniqueIdentifierAlreadyExistsException("CNPJ"));
+
         // When - Then
         this.mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson)
+                        .content(hotelAdminDtoJson)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("The CNPJ provided has already been registered in the database"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -73,19 +95,19 @@ public class HotelAdminControllerIT extends IntegrationTestConfig {
     }
 
     @Test
-    void testCreateHotelAdminAccountBadRequestEmptyOrNullArgumentsProvided() throws Exception {
+    void testSaveNewHotelAdminAccountErrorEmptyOrNullArgumentsProvided() throws Exception {
         // Given
-        var invalidRequest = new HotelAdminRequestBody(null, null);
+        var hotelAdminDto = new AdminRequestBody(null, null);
 
-        var invalidRequestJson = this.objectMapper.writeValueAsString(invalidRequest);
+        var hotelAdminDtoJson = this.objectMapper.writeValueAsString(hotelAdminDto);
 
         // When - Then
         this.mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidRequestJson)
+                        .content(hotelAdminDtoJson)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Provided arguments are invalid, see data for details"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -98,17 +120,18 @@ public class HotelAdminControllerIT extends IntegrationTestConfig {
     void testSaveNewHotelAdminAccountErrorInvalidPasswordLengthProvided() throws Exception {
         // Given
         var invalidPassword = "12345";
-        var invalidRequest = new HotelAdminRequestBody("85.576.423/0001-07", invalidPassword);
+        var hotelAdminDto = new AdminRequestBody(
+                admin.getCNPJ(), invalidPassword);
 
-        var invalidRequestJson = this.objectMapper.writeValueAsString(invalidRequest);
+        var hotelAdminDtoJson = this.objectMapper.writeValueAsString(hotelAdminDto);
 
         // When - Then
         this.mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidRequestJson)
+                        .content(hotelAdminDtoJson)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.path").value("/api/v1/hotel-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Provided arguments are invalid, see data for details"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())

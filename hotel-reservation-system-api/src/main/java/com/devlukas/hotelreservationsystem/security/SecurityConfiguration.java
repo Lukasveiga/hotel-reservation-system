@@ -75,7 +75,7 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.GET, this.base_url + "/hotel/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.base_url + "/hotel-admin").permitAll()
+                        .requestMatchers(HttpMethod.POST, this.base_url + "/hotel/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)

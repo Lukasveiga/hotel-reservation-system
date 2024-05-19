@@ -1,4 +1,4 @@
-package com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin;
+package com.devlukas.hotelreservationsystem.hotel.entities.admin;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,22 +9,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public record HotelAdminPrinciple(HotelAdmin hotelAdmin) implements UserDetails {
+public record AdminPrinciple(Admin admin) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(StringUtils.tokenizeToStringArray(this.hotelAdmin.getRoles(), " "))
+        return Arrays.stream(StringUtils.tokenizeToStringArray(this.admin.getRoles(), " "))
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role)).collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return this.hotelAdmin.getPassword();
+        return this.admin.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.hotelAdmin.getCNPJ();
+        return this.admin.getCNPJ();
     }
 
     @Override

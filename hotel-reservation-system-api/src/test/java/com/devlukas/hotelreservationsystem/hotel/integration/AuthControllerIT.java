@@ -17,16 +17,16 @@ public class AuthControllerIT extends IntegrationTestConfig {
     @Autowired
     MockMvc mockMvc;
 
-    @Value("${api.endpoint.base-url}/hotel")
+    @Value("${api.endpoint.base-url}/hotel/login")
     String BASE_URL;
 
     @Test
     void testGetLoginInfoSuccess() throws Exception {
         // When - Then
-        this.mockMvc.perform(post(BASE_URL + "/login-admin")
+        this.mockMvc.perform(post(BASE_URL)
                         .with(httpBasic("06.596.172/0001-566", "test12345")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/login-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Hotel Admin Access Token"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -43,10 +43,10 @@ public class AuthControllerIT extends IntegrationTestConfig {
         var invalidCNPJ = "06.596.172/0001-333";
 
         // When - Then
-        this.mockMvc.perform(post(BASE_URL + "/login-admin")
+        this.mockMvc.perform(post(BASE_URL)
                         .with(httpBasic(invalidCNPJ, "test12345")))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/login-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Incorrect credentials"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -60,10 +60,10 @@ public class AuthControllerIT extends IntegrationTestConfig {
         var invalidPassword = "test777777";
 
         // When - Then
-        this.mockMvc.perform(post(BASE_URL + "/login-admin")
+        this.mockMvc.perform(post(BASE_URL)
                         .with(httpBasic("06.596.172/0001-566",invalidPassword)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/login-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Incorrect credentials"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -74,10 +74,10 @@ public class AuthControllerIT extends IntegrationTestConfig {
     @Test
     void testGetLoginInfoUnauthorizedEmptyCredentials() throws Exception {
         // When - Then
-        this.mockMvc.perform(post(BASE_URL + "/login-admin")
+        this.mockMvc.perform(post(BASE_URL)
                         .with(httpBasic("","")))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/login-admin"))
+                .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Incorrect credentials"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
