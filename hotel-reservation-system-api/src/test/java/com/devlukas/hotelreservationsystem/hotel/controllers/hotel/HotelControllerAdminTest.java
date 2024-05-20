@@ -99,7 +99,7 @@ class HotelControllerAdminTest extends ControllerTestConfig {
     }
 
     @Test
-    void testSaveHotelSuccessErrorEmptyOrNullArgumentsProvided() throws Exception {
+    void testSaveHotelErrorEmptyOrNullArgumentsProvided() throws Exception {
         // Given
         var requestBody = new HotelRequestBody(
                 null,
