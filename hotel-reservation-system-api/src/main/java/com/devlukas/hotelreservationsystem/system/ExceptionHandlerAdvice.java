@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.validation.FieldError;
@@ -84,6 +85,18 @@ public class ExceptionHandlerAdvice {
                         .flag(false)
                         .localDateTime(LocalDateTime.now())
                         .message("Incorrect credentials")
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    ResponseEntity<Result> handleInsufficientAuthenticationException(Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(false)
+                        .localDateTime(LocalDateTime.now())
+                        .message("Login credentials are missing")
                         .build()
         );
     }

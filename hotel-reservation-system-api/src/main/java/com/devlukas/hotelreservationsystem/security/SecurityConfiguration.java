@@ -98,7 +98,7 @@ public class SecurityConfiguration {
     @Order(3)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher(this.base_url + "/hotel/admin/**")
+                .securityMatcher(this.base_url + "/hotel-admin/**")
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .anyRequest().hasAuthority("ROLE_hotelAdmin")
                 )

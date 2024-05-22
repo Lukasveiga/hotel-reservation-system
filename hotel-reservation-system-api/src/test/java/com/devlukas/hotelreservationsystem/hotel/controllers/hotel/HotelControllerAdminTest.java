@@ -40,7 +40,7 @@ class HotelControllerAdminTest extends ControllerTestConfig {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Value("${api.endpoint.base-url}/hotel/admin")
+    @Value("${api.endpoint.base-url}/hotel-admin")
     String BASE_URL;
 
     Hotel hotel;
@@ -277,6 +277,39 @@ class HotelControllerAdminTest extends ControllerTestConfig {
     }
 
     @Test
+    void testUpdateHotelByIdErrorEmptyOrNullArgumentsProvided() throws Exception {
+        // Given
+        var id = 1L;
+
+        var requestBody = new HotelRequestBody(
+                null,
+                null,
+                null,
+                hotel.getDescription(),
+                null,
+                hotel.getConveniences()
+        );
+
+        var request = objectMapper.writeValueAsString(requestBody);
+
+        // When - Then
+        this.mockMvc.perform(put(BASE_URL + "/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Provided arguments are invalid, see data for details"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data.name").value("Cannot be empty or null"))
+                .andExpect(jsonPath("$.data.phone").value("Cannot be empty or null"))
+                .andExpect(jsonPath("$.data.email").value("Cannot be empty or null"))
+                .andExpect(jsonPath("$.data.address").value("Cannot be null"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void testAddHotelConvenienceSuccess() throws Exception {
         // Given
         var id = 1L;
@@ -323,6 +356,28 @@ class HotelControllerAdminTest extends ControllerTestConfig {
                 .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
                 .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testAddHotelConvenienceErrorEmptyOrNullArgumentsProvided() throws Exception {
+        // Given
+        var id = 1L;
+
+        var convenienceRequestBody = new ConvenienceRequestBody(null);
+        var convenienceRequestBodyJson = objectMapper.writeValueAsString(convenienceRequestBody);
+
+        // When - Then
+        this.mockMvc.perform(patch(BASE_URL + "/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(convenienceRequestBodyJson)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Provided arguments are invalid, see data for details"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data.description").value("Cannot be empty or null"))
                 .andDo(MockMvcResultHandlers.print());
     }
 
