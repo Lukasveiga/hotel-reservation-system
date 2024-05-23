@@ -72,7 +72,6 @@ public class HotelService {
     public int removeConvenience(Long hotelId, String hotelAdminCNPJ, Long convenienceId) {
         var hotel = this.findByIdAndCNPJ(hotelId, hotelAdminCNPJ);
         return this.repository.removeConvenience(hotel.getId(), convenienceId);
-
     }
 
     @Transactional

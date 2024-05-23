@@ -223,13 +223,13 @@ public class HotelControllerAdminIT extends IntegrationTestConfig {
         var convenienceRequestBodyJson = objectMapper.writeValueAsString(convenienceRequestBody);
 
         // When - Then
-        this.mockMvc.perform(patch(BASE_URL + "/" + id)
+        this.mockMvc.perform(patch(BASE_URL + "/" + id + "/convenience")
                         .header("Authorization", this.hotelAdminAccessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(convenienceRequestBodyJson)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id + "/convenience"))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Add convenience success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -246,13 +246,13 @@ public class HotelControllerAdminIT extends IntegrationTestConfig {
         var convenienceRequestBodyJson = objectMapper.writeValueAsString(convenienceRequestBody);
 
         // When - Then
-        this.mockMvc.perform(patch(BASE_URL + "/" + id)
+        this.mockMvc.perform(patch(BASE_URL + "/" + id + "/convenience")
                         .header("Authorization", this.hotelAdminAccessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(convenienceRequestBodyJson)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id + "/convenience"))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())

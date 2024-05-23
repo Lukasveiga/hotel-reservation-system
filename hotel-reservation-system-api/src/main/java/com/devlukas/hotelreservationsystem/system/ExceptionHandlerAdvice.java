@@ -53,6 +53,18 @@ public class ExceptionHandlerAdvice {
         );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    ResponseEntity<Result> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(false)
+                        .localDateTime(LocalDateTime.now())
+                        .message(ex.getMessage())
+                        .build()
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<Result> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
@@ -90,7 +102,7 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(InsufficientAuthenticationException.class)
-    ResponseEntity<Result> handleInsufficientAuthenticationException(Exception ex, HttpServletRequest request) {
+    ResponseEntity<Result> handleInsufficientAuthenticationException(InsufficientAuthenticationException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 Result.builder()
                         .path(request.getRequestURI())
@@ -102,7 +114,7 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(InvalidBearerTokenException.class)
-    ResponseEntity<Result> handleInvalidBearerTokenException(Exception ex, HttpServletRequest request) {
+    ResponseEntity<Result> handleInvalidBearerTokenException(InvalidBearerTokenException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 Result.builder()
                         .path(request.getRequestURI())
@@ -114,7 +126,7 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    ResponseEntity<Result> handleAccessDeniedException(Exception ex, HttpServletRequest request) {
+    ResponseEntity<Result> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 Result.builder()
                         .path(request.getRequestURI())

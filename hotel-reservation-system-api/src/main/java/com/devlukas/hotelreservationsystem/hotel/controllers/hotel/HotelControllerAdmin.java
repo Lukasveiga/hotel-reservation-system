@@ -104,7 +104,7 @@ public class HotelControllerAdmin {
         );
     }
 
-    @PatchMapping("/{hotelId}")
+    @PatchMapping("/{hotelId}/convenience")
     public ResponseEntity<Result> addHotelConvenience(@PathVariable Long hotelId, @RequestBody @Validated ConvenienceRequestBody convenienceRequestBody,
                                                       HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");

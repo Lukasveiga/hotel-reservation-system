@@ -63,7 +63,7 @@ class AdminServiceTest implements ServiceTestConfig {
         // When - then
         Assertions.assertThatThrownBy(() -> this.adminService.save(admin))
                 .isInstanceOf(UniqueIdentifierAlreadyExistsException.class)
-                .hasMessage("The CNPJ provided has already been registered in the database");
+                .hasMessage("The CNPJ provided has already been registered");
         verify(this.adminRepository, times(0)).save(admin);
     }
 

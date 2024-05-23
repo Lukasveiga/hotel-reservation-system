@@ -46,6 +46,32 @@ public class HotelControllerIT extends IntegrationTestConfig {
     }
 
     @Test
+    void testFindAllHotelsPageableErrorPageIndexZero() throws Exception {
+        // When - Then
+        this.mockMvc.perform(get(BASE_URL +"?page=0&size=5").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path").value(BASE_URL))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Page index must not be less than zero"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testFindAllHotelsPageableErrorPageSizeZero() throws Exception {
+        // When - Then
+        this.mockMvc.perform(get(BASE_URL +"?page=1&size=0").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path").value(BASE_URL))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Page size must not be less than one"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void testFindHotelsByState() throws Exception {
         // When - Then
         this.mockMvc.perform(get(BASE_URL + "/filter?state=" + "trans").accept(MediaType.APPLICATION_JSON))
@@ -72,6 +98,19 @@ public class HotelControllerIT extends IntegrationTestConfig {
                 .andExpect(jsonPath("$.data.length()").value(1))
                 .andExpect(jsonPath("$.data[0].name").value("Hotel Beverly Wilshire"))
                 .andExpect(jsonPath("$.data[0].address.city").value("Beverly Hills"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testFindHotelsFilterNullParams() throws Exception {
+        // When - Then
+        this.mockMvc.perform(get(BASE_URL + "/filter"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/filter"))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.message").value("Find all success"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data.length()").value(0))
                 .andDo(MockMvcResultHandlers.print());
     }
 }

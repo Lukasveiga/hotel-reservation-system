@@ -139,6 +139,19 @@ class HotelControllerTest extends ControllerTestConfig {
     }
 
     @Test
+    void testFindHotelsFilterNullParams() throws Exception {
+        // When - Then
+        this.mockMvc.perform(get(BASE_URL + "/filter"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/filter"))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.message").value("Find all success"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data.length()").value(0))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void testInternalSeverError() throws Exception {
         // Given
         when(this.hotelService.findByCity(anyString()))

@@ -88,7 +88,7 @@ class AdminControllerTest extends ControllerTestConfig {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.path").value(BASE_URL))
                 .andExpect(jsonPath("$.flag").value(false))
-                .andExpect(jsonPath("$.message").value("The CNPJ provided has already been registered in the database"))
+                .andExpect(jsonPath("$.message").value("The CNPJ provided has already been registered"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
