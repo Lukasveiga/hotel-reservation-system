@@ -3,9 +3,9 @@ package com.devlukas.hotelreservationsystem.system;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.HotelAddress;
-import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdmin;
+import com.devlukas.hotelreservationsystem.hotel.entities.admin.Admin;
 import com.devlukas.hotelreservationsystem.hotel.repositories.HotelRepository;
-import com.devlukas.hotelreservationsystem.hotel.services.hotelAdmin.HotelAdminService;
+import com.devlukas.hotelreservationsystem.hotel.services.admin.AdminService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -18,22 +18,22 @@ public class DBDataInitializer implements CommandLineRunner {
 
     private final HotelRepository hotelRepository;
 
-    private final HotelAdminService hotelAdminService;
+    private final AdminService adminService;
 
-    public DBDataInitializer(HotelRepository hotelRepository, HotelAdminService hotelAdminService) {
+    public DBDataInitializer(HotelRepository hotelRepository, AdminService adminService) {
         this.hotelRepository = hotelRepository;
-        this.hotelAdminService = hotelAdminService;
+        this.adminService = adminService;
     }
 
     @Override
     public void run(String... args) {
 
-        var hotelAdmin = new HotelAdmin();
+        var hotelAdmin = new Admin();
         hotelAdmin.setId(1L);
         hotelAdmin.setCNPJ("06.596.172/0001-566");
         hotelAdmin.setPassword("test12345");
 
-        hotelAdminService.save(hotelAdmin);
+        adminService.save(hotelAdmin);
 
         var description = "Um resort de luxo cinco estrelas comandado pelo Conde Drácula, onde os monstros podem se divertir e" +
                 "possam descansar do árduo trabalho de perseguir e assustar os humanos.";

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("${api.endpoint.base-url}/hotel/admin")
+@RequestMapping("${api.endpoint.base-url}/hotel-admin")
 public class HotelControllerAdmin {
 
     private final HotelService hotelService;
@@ -87,7 +87,7 @@ public class HotelControllerAdmin {
     }
 
     @PutMapping("/{hotelId}")
-    public ResponseEntity<Result> updateHotel(@PathVariable Long hotelId, @RequestBody HotelRequestBody requestBody, HttpServletRequest request) {
+    public ResponseEntity<Result> updateHotel(@PathVariable Long hotelId, @RequestBody @Validated HotelRequestBody requestBody, HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");
 
         var updatedHotel = this.hotelService.updateBasicHotelInfo(hotelId, hotelAdminCNPJ, Objects.requireNonNull(this.requestToHotel.convert(requestBody)));
@@ -104,8 +104,8 @@ public class HotelControllerAdmin {
         );
     }
 
-    @PatchMapping("/{hotelId}")
-    public ResponseEntity<Result> addHotelConvenience(@PathVariable Long hotelId, @RequestBody ConvenienceRequestBody convenienceRequestBody,
+    @PatchMapping("/{hotelId}/convenience")
+    public ResponseEntity<Result> addHotelConvenience(@PathVariable Long hotelId, @RequestBody @Validated ConvenienceRequestBody convenienceRequestBody,
                                                       HttpServletRequest request) {
         var hotelAdminCNPJ = getTokenAttribute("sub");
 

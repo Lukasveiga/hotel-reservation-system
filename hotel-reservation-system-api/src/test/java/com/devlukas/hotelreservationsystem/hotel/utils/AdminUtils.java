@@ -1,11 +1,11 @@
 package com.devlukas.hotelreservationsystem.hotel.utils;
 
-import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdmin;
+import com.devlukas.hotelreservationsystem.hotel.entities.admin.Admin;
 
-public class HotelAdminUtils {
+public class AdminUtils {
 
-    public static HotelAdmin generateHotelAdminEntity() {
-        var hotelAdmin = new HotelAdmin();
+    public static Admin generateHotelAdminEntity() {
+        var hotelAdmin = new Admin();
         hotelAdmin.setId(1L);
         hotelAdmin.setCNPJ("15.885.735/0001-17");
         hotelAdmin.setPassword("test12345");

@@ -36,7 +36,7 @@ public class HotelController {
         List<Hotel> hotels;
 
         if(page != null && size != null) {
-            hotels = this.hotelService.findAllPageable(page, size);
+            hotels = this.hotelService.findAllPageable(page - 1, size);
         } else {
             hotels = this.hotelService.findAll();
         }

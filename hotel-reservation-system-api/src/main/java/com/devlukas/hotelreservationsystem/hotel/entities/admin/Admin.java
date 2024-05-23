@@ -1,4 +1,4 @@
-package com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin;
+package com.devlukas.hotelreservationsystem.hotel.entities.admin;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-public class HotelAdmin {
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -19,7 +19,7 @@ public class HotelAdmin {
 
     private String roles;
 
-    public HotelAdmin() {
+    public Admin() {
     }
 
 }

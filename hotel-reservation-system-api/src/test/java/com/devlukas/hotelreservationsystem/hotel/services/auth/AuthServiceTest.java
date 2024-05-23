@@ -2,8 +2,8 @@ package com.devlukas.hotelreservationsystem.hotel.services.auth;
 
 import com.devlukas.hotelreservationsystem.ServiceTestConfig;
 import com.devlukas.hotelreservationsystem.hotel.auth.AuthService;
-import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdmin;
-import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdminPrinciple;
+import com.devlukas.hotelreservationsystem.hotel.entities.admin.Admin;
+import com.devlukas.hotelreservationsystem.hotel.entities.admin.AdminPrinciple;
 import com.devlukas.hotelreservationsystem.security.JWTProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,21 +24,21 @@ class AuthServiceTest implements ServiceTestConfig {
     @InjectMocks
     AuthService authService;
 
-    HotelAdmin hotelAdmin;
+    Admin admin;
 
     @BeforeEach
     void setUp() {
-        hotelAdmin = new HotelAdmin();
-        hotelAdmin.setCNPJ("1");
-        hotelAdmin.setPassword("12345");
-        hotelAdmin.setId(1L);
-        hotelAdmin.setRoles("admin");
+        admin = new Admin();
+        admin.setCNPJ("1");
+        admin.setPassword("12345");
+        admin.setId(1L);
+        admin.setRoles("admin");
     }
 
     @Test
     void testCreateLoginInfoSuccess() {
         // Given
-        var hotelPrincipal = new HotelAdminPrinciple(hotelAdmin);
+        var hotelPrincipal = new AdminPrinciple(admin);
         var authentication = UsernamePasswordAuthenticationToken.authenticated(hotelPrincipal,
                 hotelPrincipal.getPassword(), hotelPrincipal.getAuthorities());
 
@@ -51,7 +51,7 @@ class AuthServiceTest implements ServiceTestConfig {
         // Then
         Assertions.assertThat(loginResultMap).isNotNull();
         Assertions.assertThat(loginResultMap.get("token")).isEqualTo("token");
-        Assertions.assertThat(loginResultMap.get("hotelAdminInfo")).usingRecursiveAssertion().isEqualTo(hotelAdmin);
+        Assertions.assertThat(loginResultMap.get("hotelAdminInfo")).usingRecursiveAssertion().isEqualTo(admin);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.devlukas.hotelreservationsystem.hotel.auth;
 
-import com.devlukas.hotelreservationsystem.hotel.entities.hotelAdmin.HotelAdminPrinciple;
-import com.devlukas.hotelreservationsystem.hotel.repositories.HotelAdminRepository;
+import com.devlukas.hotelreservationsystem.hotel.entities.admin.AdminPrinciple;
+import com.devlukas.hotelreservationsystem.hotel.repositories.AdminRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class HotelAdminUserDetailsService implements UserDetailsService {
 
-    private final HotelAdminRepository hotelAdminRepository;
+    private final AdminRepository adminRepository;
 
-    public HotelAdminUserDetailsService(HotelAdminRepository hotelAdminRepository) {
-        this.hotelAdminRepository = hotelAdminRepository;
+    public HotelAdminUserDetailsService(AdminRepository adminRepository) {
+        this.adminRepository = adminRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String cnpj) throws UsernameNotFoundException {
-        var hotelAdmin = this.hotelAdminRepository.findByCNPJ(cnpj);
-        return hotelAdmin.map(HotelAdminPrinciple::new).orElseThrow(() -> new UsernameNotFoundException("Hotel admin not found"));
+        var hotelAdmin = this.adminRepository.findByCNPJ(cnpj);
+        return hotelAdmin.map(AdminPrinciple::new).orElseThrow(() -> new UsernameNotFoundException("Hotel admin not found"));
     }
 }

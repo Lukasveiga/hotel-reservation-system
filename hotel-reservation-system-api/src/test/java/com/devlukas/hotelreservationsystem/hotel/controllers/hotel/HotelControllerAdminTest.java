@@ -40,7 +40,7 @@ class HotelControllerAdminTest extends ControllerTestConfig {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Value("${api.endpoint.base-url}/hotel/admin")
+    @Value("${api.endpoint.base-url}/hotel-admin")
     String BASE_URL;
 
     Hotel hotel;
@@ -99,7 +99,7 @@ class HotelControllerAdminTest extends ControllerTestConfig {
     }
 
     @Test
-    void testSaveHotelSuccessErrorEmptyOrNullArgumentsProvided() throws Exception {
+    void testSaveHotelErrorEmptyOrNullArgumentsProvided() throws Exception {
         // Given
         var requestBody = new HotelRequestBody(
                 null,
@@ -277,6 +277,39 @@ class HotelControllerAdminTest extends ControllerTestConfig {
     }
 
     @Test
+    void testUpdateHotelByIdErrorEmptyOrNullArgumentsProvided() throws Exception {
+        // Given
+        var id = 1L;
+
+        var requestBody = new HotelRequestBody(
+                null,
+                null,
+                null,
+                hotel.getDescription(),
+                null,
+                hotel.getConveniences()
+        );
+
+        var request = objectMapper.writeValueAsString(requestBody);
+
+        // When - Then
+        this.mockMvc.perform(put(BASE_URL + "/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Provided arguments are invalid, see data for details"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data.name").value("Cannot be empty or null"))
+                .andExpect(jsonPath("$.data.phone").value("Cannot be empty or null"))
+                .andExpect(jsonPath("$.data.email").value("Cannot be empty or null"))
+                .andExpect(jsonPath("$.data.address").value("Cannot be null"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void testAddHotelConvenienceSuccess() throws Exception {
         // Given
         var id = 1L;
@@ -289,12 +322,12 @@ class HotelControllerAdminTest extends ControllerTestConfig {
 
 
         // When - Then
-        this.mockMvc.perform(patch(BASE_URL + "/" + id)
+        this.mockMvc.perform(patch(BASE_URL + "/" + id + "/convenience")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(convenienceRequestBodyJson)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id + "/convenience"))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.message").value("Add convenience success"))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
@@ -313,14 +346,99 @@ class HotelControllerAdminTest extends ControllerTestConfig {
                 .when(this.hotelService).addConvenience(anyLong(), anyString(), anyString());
 
         // When - Then
-        this.mockMvc.perform(patch(BASE_URL + "/" + id)
+        this.mockMvc.perform(patch(BASE_URL + "/" + id + "/convenience")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(convenienceRequestBodyJson)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id))
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id + "/convenience"))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + id))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testAddHotelConvenienceErrorEmptyOrNullArgumentsProvided() throws Exception {
+        // Given
+        var id = 1L;
+
+        var convenienceRequestBody = new ConvenienceRequestBody(null);
+        var convenienceRequestBodyJson = objectMapper.writeValueAsString(convenienceRequestBody);
+
+        // When - Then
+        this.mockMvc.perform(patch(BASE_URL + "/" + id + "/convenience")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(convenienceRequestBodyJson)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + id + "/convenience"))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Provided arguments are invalid, see data for details"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data.description").value("Cannot be empty or null"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testRemoveHotelConvenienceSuccess() throws Exception {
+        // Given
+        var hotelId = 1L;
+        var convenienceId = 1L;
+
+        when(this.hotelService.removeConvenience(anyLong(), anyString(),anyLong()))
+                .thenReturn(1);
+
+        // When - Then
+        this.mockMvc.perform(patch(BASE_URL + "/" + hotelId + "/convenience/" + convenienceId)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + hotelId + "/convenience/" + convenienceId))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.message").value("Remove convenience success"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testRemoveHotelConvenienceSuccessNotRemoved() throws Exception {
+        // Given
+        var hotelId = 1L;
+        var convenienceId = 1L;
+
+        when(this.hotelService.removeConvenience(anyLong(), anyString(),anyLong()))
+                .thenReturn(0);
+
+        // When - Then
+        this.mockMvc.perform(patch(BASE_URL + "/" + hotelId + "/convenience/" + convenienceId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + hotelId + "/convenience/" + convenienceId))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.message").value("Convenience already removed or not exist"))
+                .andExpect(jsonPath("$.localDateTime").isNotEmpty())
+                .andExpect(jsonPath("$.data").isEmpty())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void testRemoveHotelConvenienceErrorObjectNotFoundException() throws Exception {
+        // Given
+        var hotelId = 1L;
+        var convenienceId = 1L;
+
+        doThrow(new ObjectNotFoundException("Hotel", hotelId))
+                .when(this.hotelService).removeConvenience(anyLong(), anyString(), anyLong());
+
+        // When - Then
+        this.mockMvc.perform(patch(BASE_URL + "/" + hotelId + "/convenience/" + convenienceId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.path").value(BASE_URL + "/" + hotelId + "/convenience/" + convenienceId))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.message").value("Could not found Hotel with id " + hotelId))
                 .andExpect(jsonPath("$.localDateTime").isNotEmpty())
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
