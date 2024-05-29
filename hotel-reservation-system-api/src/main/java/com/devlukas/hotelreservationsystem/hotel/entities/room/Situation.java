@@ -13,4 +13,7 @@ public enum Situation {
         this.situation = situation;
     }
 
+    public String getValue() {
+        return situation;
+    }
 }

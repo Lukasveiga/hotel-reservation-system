@@ -6,6 +6,13 @@ import com.devlukas.hotelreservationsystem.hotel.entities.hotel.HotelAddress;
 
 public class HotelUtils {
 
+    public static Hotel generateHotelEntity() {
+        return new Hotel("Test Hotel", "80.826.515/0001-84",
+                "(11)2233-5599",
+                "hotel_test@email.com",
+                "Test Hotel with great accommodations to run junit tests", null);
+    }
+
     public static Hotel generateHotelEntity(HotelAddress address) {
         return new Hotel("Test Hotel", "80.826.515/0001-84",
                 "(11)2233-5599",
