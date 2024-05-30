@@ -4,7 +4,10 @@ import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Convenience;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.Hotel;
 import com.devlukas.hotelreservationsystem.hotel.entities.hotel.HotelAddress;
 import com.devlukas.hotelreservationsystem.hotel.entities.admin.Admin;
+import com.devlukas.hotelreservationsystem.hotel.entities.room.Room;
+import com.devlukas.hotelreservationsystem.hotel.entities.room.Situation;
 import com.devlukas.hotelreservationsystem.hotel.repositories.HotelRepository;
+import com.devlukas.hotelreservationsystem.hotel.repositories.RoomRepository;
 import com.devlukas.hotelreservationsystem.hotel.services.admin.AdminService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +23,7 @@ public class DBDataInitializer implements CommandLineRunner {
 
     private final AdminService adminService;
 
-    public DBDataInitializer(HotelRepository hotelRepository, AdminService adminService) {
+    public DBDataInitializer(HotelRepository hotelRepository, AdminService adminService, RoomRepository roomRepository) {
         this.hotelRepository = hotelRepository;
         this.adminService = adminService;
     }
@@ -59,6 +62,11 @@ public class DBDataInitializer implements CommandLineRunner {
             con.setHotel(hotel);
         });
 
+        var room = new Room("Test Room 1", 15.0, 2, 299, 4, Situation.AVAILABLE);
+
+        hotel.addRoom(room);
+        room.setHotel(hotel);
+
         this.hotelRepository.save(hotel);
 
         var description2 = "O Hotel Beverly Wilshire é um ícone luxuoso situado no coração de Beverly Hills, conhecido " +
@@ -86,5 +94,7 @@ public class DBDataInitializer implements CommandLineRunner {
         });
 
         this.hotelRepository.save(hotel2);
+
+
     }
 }

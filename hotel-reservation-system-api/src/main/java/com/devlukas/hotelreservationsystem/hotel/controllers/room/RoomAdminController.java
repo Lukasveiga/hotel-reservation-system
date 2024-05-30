@@ -21,14 +21,6 @@ import java.util.Objects;
 @RequestMapping("${api.endpoint.base-url}/hotel-admin/{hotelId}/room")
 public class RoomAdminController {
 
-    /* TODO:
-     *   - Save room give a hotel id
-     *   - Find room by id and hotel id
-     *   - Find all rooms give a hotel id
-     *   - Update room by id give a hotel id
-     *   - Delete room by id give a hotel id
-     * */
-
     private final HotelService hotelService;
 
     private final RoomService roomService;
@@ -63,6 +55,85 @@ public class RoomAdminController {
                         .build()
         );
     }
+
+    @GetMapping
+    public ResponseEntity<Result> findAllRooms(@PathVariable("hotelId") Long hotelId, HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+        var hotel = this.hotelService.findByIdAndCNPJ(hotelId, hotelAdminCNPJ);
+
+        var rooms = this.roomService.findAll(hotel.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Find all success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(rooms.stream().map(this.roomToResponseConverter::convert))
+                        .build()
+        );
+    }
+
+    @GetMapping("/{roomId}")
+    public ResponseEntity<Result> findRoomById(@PathVariable("hotelId") Long hotelId, @PathVariable("roomId") Long roomId,
+                                               HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+        var hotel = this.hotelService.findByIdAndCNPJ(hotelId, hotelAdminCNPJ);
+
+        var room = this.roomService.findById(hotel.getId(), roomId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Find one success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(this.roomToResponseConverter.convert(room))
+                        .build()
+        );
+    }
+
+    @PutMapping("/{roomId}")
+    public ResponseEntity<Result> updateRoom(@PathVariable("hotelId") Long hotelId, @PathVariable("roomId") Long roomId,
+                                             @RequestBody @Validated RoomRequestBody roomRequestBody, HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+        var hotel = this.hotelService.findByIdAndCNPJ(hotelId, hotelAdminCNPJ);
+
+        var room = this.requestToRoomConverter.convert(roomRequestBody);
+
+        var updateRoom = this.roomService.update(hotel.getId(), roomId, Objects.requireNonNull(room));
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Update success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(this.roomToResponseConverter.convert(updateRoom))
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<Result> deleteRoom(@PathVariable("hotelId") Long hotelId, @PathVariable("roomId") Long roomId,
+                                             HttpServletRequest request) {
+        var hotelAdminCNPJ = getTokenAttribute("sub");
+        var hotel = this.hotelService.findByIdAndCNPJ(hotelId, hotelAdminCNPJ);
+
+        this.roomService.delete(hotel.getId(), roomId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Result.builder()
+                        .path(request.getRequestURI())
+                        .flag(true)
+                        .message("Delete success")
+                        .localDateTime(LocalDateTime.now())
+                        .data(null)
+                        .build()
+        );
+
+    }
+
 
     private String getTokenAttribute(String attributeKey) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
