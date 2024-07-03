@@ -96,7 +96,7 @@
 
 	<profiles>
 		<profile>
-			<id>unit-tests</id> <!-- mvn test -Punit-test -->
+			<id>unit-tests</id> <!-- mvn test -Punit-tests -->
 			<build>
 				<plugins>
 					<plugin>
@@ -112,7 +112,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>integration-tests</id> <!-- mvn test -Pintegration-test -->
+			<id>integration-tests</id> <!-- mvn test -Pintegration-tests -->
 			<build>
 				<plugins>
 					<plugin>
