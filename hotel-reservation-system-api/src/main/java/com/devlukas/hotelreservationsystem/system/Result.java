@@ -11,5 +11,4 @@ public record Result(
         String message,
         LocalDateTime localDateTime,
         Object data) {
-
 }

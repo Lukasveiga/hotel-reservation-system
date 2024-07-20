@@ -43,11 +43,8 @@ public class Hotel {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "hotel", orphanRemoval = true)
     private final Set<Convenience> conveniences = new HashSet<>();
 
-    @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private final List<Room> rooms = new ArrayList<>();
-
-    @Version
-    protected long version;
 
     public Hotel() {
     }

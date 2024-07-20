@@ -82,7 +82,7 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.GET, this.base_url + "/hotel/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.base_url + "/hotel/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, this.base_url + "/hotel/**").permitAll() // TODO: What is this endpoint for?
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)

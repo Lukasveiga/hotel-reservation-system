@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -82,6 +83,9 @@ class RoomServiceTest implements ServiceTestConfig {
 
         when(this.hotelRepository.findById(hotel.getId()))
                 .thenReturn(Optional.of(hotel));
+
+        when(this.roomRepository.findAllByHotelId(anyLong()))
+                .thenReturn(List.of(room));
 
         // When
         var rooms = this.roomService.findAll(hotel.getId());

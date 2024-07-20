@@ -4,8 +4,7 @@ import com.devlukas.hotelreservationsystem.IntegrationTestConfig;
 import com.devlukas.hotelreservationsystem.hotel.controllers.admin.dto.AdminRequestBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -16,6 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AdminControllerIT extends IntegrationTestConfig {
 
     @Autowired
@@ -39,6 +39,7 @@ public class AdminControllerIT extends IntegrationTestConfig {
     }
 
     @Test
+    @Order(1)
     void testCreateHotelAdminAccountSuccess() throws Exception {
         // When - Then
         this.mockMvc.perform(post(BASE_URL)
@@ -57,7 +58,7 @@ public class AdminControllerIT extends IntegrationTestConfig {
     }
 
     @Test
-    void testCreateHotelAdminAccountSuccessBadRequestUniqueIdentifierAlreadyExists() throws Exception {
+    void testCreateHotelAdminAccountBadRequestUniqueIdentifierAlreadyExists() throws Exception {
         // When - Then
         this.mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)

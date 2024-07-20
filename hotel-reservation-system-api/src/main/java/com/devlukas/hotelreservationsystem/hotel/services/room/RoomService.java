@@ -31,8 +31,8 @@ public class RoomService {
     }
 
     public List<Room> findAll(Long hotelId) {
-        var hotel = this.findHotelById(hotelId);
-        return hotel.getRooms();
+        this.findHotelById(hotelId);
+        return this.roomRepository.findAllByHotelId(hotelId);
     }
 
     public Room findById(Long hotelId, Long roomId) {
