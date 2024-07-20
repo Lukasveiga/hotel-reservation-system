@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.devlukas.hotelreservationsystem</groupId>
-	<artifactId>hotelreservationsystem</artifactId>
+	<artifactId>hotelservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>HotelReservationSystem</name>
-	<description>Hotel Reservation System Rest API</description>
+	<name>Hotel Service</name>
+	<description>Hotel Reservation System: Hotel Service</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
