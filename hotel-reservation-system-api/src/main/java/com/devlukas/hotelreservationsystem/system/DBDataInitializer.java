@@ -94,7 +94,5 @@ public class DBDataInitializer implements CommandLineRunner {
         });
 
         this.hotelRepository.save(hotel2);
-
-
     }
 }
