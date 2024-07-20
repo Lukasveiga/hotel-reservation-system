@@ -9,14 +9,3 @@ spring:
   web:
     resources:
       add-mappings: false
-
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,env,metrics
-
-api:
-  endpoint:
-    base-url: /api/v1

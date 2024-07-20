@@ -9,3 +9,7 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: create
+
+api:
+  endpoint:
+    base-url: /api/v1
