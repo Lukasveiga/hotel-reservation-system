@@ -1,6 +1,25 @@
+server:
+  port: 8080
+
 web:
   resources:
     add-mappings: false
+
+eureka:
+  instance:
+    preferIpAddress: true
+    lease-renewal-interval-in-seconds: 15
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,metrics
 
 api:
   endpoint:
