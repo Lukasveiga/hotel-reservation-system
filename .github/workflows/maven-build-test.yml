@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./hotel-reservation-system-api
+        working-directory: ./hotel-service
 
     steps:
       - name: Check out the repository
