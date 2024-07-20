@@ -1,10 +1,21 @@
 spring:
+  application:
+    name: hotel-service
   profiles:
     active: dev
+  config:
+    import: optional:configserver:http://localhost:8071
 
   web:
     resources:
       add-mappings: false
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,metrics
 
 api:
   endpoint:
