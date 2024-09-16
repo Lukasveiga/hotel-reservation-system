@@ -19,6 +19,10 @@ spring:
           enabled: true
           lower-case-service-id: true
 
+api:
+  endpoint:
+    base-url: /api/v1
+
 management:
   endpoints:
     web:

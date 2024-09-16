@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+web:
+  resources:
+    add-mappings: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,metrics
+
+api:
+  endpoint:
+    base-url: /api/v1
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
