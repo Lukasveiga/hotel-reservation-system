@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: Hotel Service
+
+  web:
+    resources:
+      add-mappings: false
+
+api:
+  endpoint:
+    base: /api/v1

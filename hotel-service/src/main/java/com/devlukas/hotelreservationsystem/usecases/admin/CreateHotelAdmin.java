@@ -1,8 +1,8 @@
-package com.devlukas.hotelreservationsystem.usecases.hotelAdmin;
+package com.devlukas.hotelreservationsystem.usecases.admin;
 
 import com.devlukas.hotelreservationsystem.domain.HotelAdmin;
 import com.devlukas.hotelreservationsystem.repository.HotelAdminRepository;
-import com.devlukas.hotelreservationsystem.usecases.exceptions.UniqueIdentifierAlreadyExists;
+import com.devlukas.hotelreservationsystem.usecases.exceptions.UniqueIdentifierAlreadyExistsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +21,13 @@ public class CreateHotelAdmin {
     @Transactional
     public HotelAdmin execute(HotelAdmin hotelAdmin) {
         this.repository.findByCnpj(hotelAdmin.getCnpj())
-                .ifPresent(e -> {throw new UniqueIdentifierAlreadyExists("cnpj");});
+                .ifPresent(e -> {throw new UniqueIdentifierAlreadyExistsException("cnpj");});
 
         this.repository.findByEmail(hotelAdmin.getEmail())
-                .ifPresent(e -> {throw new UniqueIdentifierAlreadyExists("email");});
+                .ifPresent(e -> {throw new UniqueIdentifierAlreadyExistsException("email");});
 
         hotelAdmin.setPassword(this.encoder.encode(hotelAdmin.getPassword()));
+        hotelAdmin.setActive(true);
         hotelAdmin.setRoles("admin");
 
         return this.repository.save(hotelAdmin);

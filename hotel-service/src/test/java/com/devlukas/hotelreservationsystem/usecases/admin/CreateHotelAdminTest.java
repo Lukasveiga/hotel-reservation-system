@@ -1,9 +1,9 @@
-package com.devlukas.hotelreservationsystem.usecases.hotelAdmin;
+package com.devlukas.hotelreservationsystem.usecases.admin;
 
 import com.devlukas.hotelreservationsystem.configuration.UsecasesTestConfiguration;
 import com.devlukas.hotelreservationsystem.domain.HotelAdmin;
 import com.devlukas.hotelreservationsystem.repository.HotelAdminRepository;
-import com.devlukas.hotelreservationsystem.usecases.exceptions.UniqueIdentifierAlreadyExists;
+import com.devlukas.hotelreservationsystem.usecases.exceptions.UniqueIdentifierAlreadyExistsException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class CreateHotelAdminTest implements UsecasesTestConfiguration {
                 .thenReturn(Optional.of(hotelAdminTest));
 
         Assertions.assertThatThrownBy(() -> this.sut.execute(hotelAdminTest))
-                .isInstanceOf(UniqueIdentifierAlreadyExists.class)
+                .isInstanceOf(UniqueIdentifierAlreadyExistsException.class)
                 .hasMessage("The %s provided has already been registered".formatted("cnpj"));
     }
 
@@ -54,7 +54,7 @@ class CreateHotelAdminTest implements UsecasesTestConfiguration {
                 .thenReturn(Optional.of(hotelAdminTest));
 
         Assertions.assertThatThrownBy(() -> this.sut.execute(hotelAdminTest))
-                .isInstanceOf(UniqueIdentifierAlreadyExists.class)
+                .isInstanceOf(UniqueIdentifierAlreadyExistsException.class)
                 .hasMessage("The %s provided has already been registered".formatted("email"));
     }
 
