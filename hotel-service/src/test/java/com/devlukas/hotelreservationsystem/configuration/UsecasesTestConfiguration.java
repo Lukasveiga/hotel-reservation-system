@@ -8,6 +8,5 @@ import org.springframework.test.context.ActiveProfiles;
 @Tag("Usecases")
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public interface UsecasesTestConfiguration {
-}
+public interface UsecasesTestConfiguration {}
 

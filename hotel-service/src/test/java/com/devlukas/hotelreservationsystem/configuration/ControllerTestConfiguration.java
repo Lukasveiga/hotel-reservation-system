@@ -9,5 +9,4 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class ControllerTestConfiguration {
-}
+public class ControllerTestConfiguration {}
