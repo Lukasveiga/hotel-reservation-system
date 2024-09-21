@@ -58,6 +58,20 @@ public class ExceptionHandlerAdvice {
                 );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    ResponseEntity<ResultBody> handlerIllegalArgumentException(IllegalArgumentException ex,
+                                                                             HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ResultBody.builder()
+                                .path(request.getRequestURI())
+                                .flag(false)
+                                .dateTime(LocalDateTime.now())
+                                .message(ex.getMessage())
+                                .build()
+                );
+    }
+
     @ExceptionHandler(NoHandlerFoundException.class)
     ResponseEntity<ResultBody> handlerNoHandlerFoundException(NoHandlerFoundException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

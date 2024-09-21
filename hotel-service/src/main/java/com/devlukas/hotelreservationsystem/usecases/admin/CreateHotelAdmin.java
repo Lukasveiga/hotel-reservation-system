@@ -1,6 +1,7 @@
 package com.devlukas.hotelreservationsystem.usecases.admin;
 
 import com.devlukas.hotelreservationsystem.domain.HotelAdmin;
+import com.devlukas.hotelreservationsystem.ports.CnpjValidation;
 import com.devlukas.hotelreservationsystem.repository.HotelAdminRepository;
 import com.devlukas.hotelreservationsystem.usecases.exceptions.UniqueIdentifierAlreadyExistsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,10 +13,12 @@ public class CreateHotelAdmin {
 
     private final HotelAdminRepository repository;
     private final PasswordEncoder encoder;
+    private final CnpjValidation cnpjValidation;
 
-    public CreateHotelAdmin(HotelAdminRepository repository, PasswordEncoder encoder) {
+    public CreateHotelAdmin(HotelAdminRepository repository, PasswordEncoder encoder, CnpjValidation cnpjValidation) {
         this.repository = repository;
         this.encoder = encoder;
+        this.cnpjValidation = cnpjValidation;
     }
 
     @Transactional
@@ -25,6 +28,10 @@ public class CreateHotelAdmin {
 
         this.repository.findByEmail(hotelAdmin.getEmail())
                 .ifPresent(e -> {throw new UniqueIdentifierAlreadyExistsException("email");});
+
+        if (!this.cnpjValidation.validate(hotelAdmin.getCnpj())) {
+            throw new IllegalArgumentException("Invalid CNPJ");
+        }
 
         hotelAdmin.setPassword(this.encoder.encode(hotelAdmin.getPassword()));
         hotelAdmin.setActive(true);

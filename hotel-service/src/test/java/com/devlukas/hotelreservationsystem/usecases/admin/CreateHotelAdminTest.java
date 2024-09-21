@@ -2,6 +2,7 @@ package com.devlukas.hotelreservationsystem.usecases.admin;
 
 import com.devlukas.hotelreservationsystem.configuration.UsecasesTestConfiguration;
 import com.devlukas.hotelreservationsystem.domain.HotelAdmin;
+import com.devlukas.hotelreservationsystem.ports.CnpjValidation;
 import com.devlukas.hotelreservationsystem.repository.HotelAdminRepository;
 import com.devlukas.hotelreservationsystem.usecases.exceptions.UniqueIdentifierAlreadyExistsException;
 import org.assertj.core.api.Assertions;
@@ -23,6 +24,9 @@ class CreateHotelAdminTest implements UsecasesTestConfiguration {
 
     @Mock
     PasswordEncoder mockEncoder;
+
+    @Mock
+    CnpjValidation mockCnpjValidation;
 
     @InjectMocks
     CreateHotelAdmin sut;
@@ -59,7 +63,26 @@ class CreateHotelAdminTest implements UsecasesTestConfiguration {
     }
 
     @Test
+    void test_CreateHotelAdmin_Should_Throw_Exception_When_Invalid_Cnpj_Is_Provided() {
+        when(this.mockCnpjValidation.validate(anyString()))
+                .thenReturn(false);
+
+        Assertions.assertThatThrownBy(() -> this.sut.execute(hotelAdminTest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid CNPJ");
+    }
+
+    @Test
     void test_CreateHotelAdmin_Success() {
+        when(this.mockRepository.findByCnpj(anyString()))
+                .thenReturn(Optional.empty());
+
+        when(this.mockRepository.findByEmail(anyString()))
+                .thenReturn(Optional.empty());
+
+        when(this.mockCnpjValidation.validate(anyString()))
+                .thenReturn(true);
+
         when(this.mockRepository.save(hotelAdminTest))
                 .thenReturn(hotelAdminTest);
 

@@ -73,7 +73,7 @@ class HotelAdminControllerTest extends ControllerTestConfiguration {
     }
 
     @Test
-    void test_Create_Bad_Request_Unique_Identifier_Provided_Already_Exists() throws Exception {
+    void test_Create_Bad_Request_When_Unique_Identifier_Provided_Already_Exists() throws Exception {
         // Given
         var requestJson = this.objectMapper.writeValueAsString(request);
 
@@ -93,7 +93,27 @@ class HotelAdminControllerTest extends ControllerTestConfiguration {
     }
 
     @Test
-    void test_Create_Bad_Request_Invalid_Arguments_Are_Provided() throws Exception{
+    void test_Create_Bad_Request_When_Invalid_Cnpj_Is_Provided() throws Exception {
+        // Given
+        var requestJson = this.objectMapper.writeValueAsString(request);
+
+        when(this.createHotelAdmin.execute(any(HotelAdmin.class)))
+                .thenThrow(new IllegalArgumentException("Invalid CNPJ"));
+
+        // When - Then
+        this.mockMvc.perform(post(base_url + "/admin").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path").value(base_url + "/admin"))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.dateTime").exists())
+                .andExpect(jsonPath("$.message").value("Invalid CNPJ"))
+                .andExpect(jsonPath("$.data").doesNotExist())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void test_Create_Bad_Request_When_Invalid_Arguments_Are_Provided() throws Exception{
         // Given
         var invalidRequest = new HotelAdminRequestBody("", "", "", "");
 
