@@ -32,7 +32,7 @@ public class HotelAdmin {
 
     private boolean isActive;
 
-    @OneToMany(mappedBy = "hotelAdmin", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "hotelAdmin")
     private final List<Hotel> hotels = new ArrayList<>();
 
     public void addHotel(Hotel hotel) {
